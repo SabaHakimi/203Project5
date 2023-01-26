@@ -17,7 +17,7 @@ public final class Action {
     }
 
     public void executeActivityAction(EventScheduler scheduler) {
-        switch (this.entity.kind) {
+        switch (this.entity.getKind()) {
             case SAPLING:
                 this.entity.executeSaplingActivity(this.world, this.imageStore, scheduler);
                 break;
@@ -34,7 +34,7 @@ public final class Action {
                 this.entity.executeDudeFullActivity(this.world, this.imageStore, scheduler);
                 break;
             default:
-                throw new UnsupportedOperationException(String.format("executeActivityAction not supported for %s", this.entity.kind));
+                throw new UnsupportedOperationException(String.format("executeActivityAction not supported for %s", this.entity.getKind()));
         }
     }
 
@@ -42,7 +42,7 @@ public final class Action {
         this.entity.nextImage();
 
         if (this.repeatCount != 1) {
-            Functions.scheduleEvent(scheduler, this.entity, Functions.createAnimationAction(this.entity, Math.max(this.repeatCount - 1, 0)), this.entity.getAnimationPeriod());
+            scheduler.scheduleEvent(this.entity, Functions.createAnimationAction(this.entity, Math.max(this.repeatCount - 1, 0)), this.entity.getAnimationPeriod());
         }
     }
 

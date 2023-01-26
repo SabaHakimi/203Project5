@@ -67,10 +67,6 @@ public final class Functions {
     public static final int TREE_HEALTH_MIN = 1;
 
 
-    public static boolean adjacent(Point p1, Point p2) {
-        return (p1.x == p2.x && Math.abs(p1.y - p2.y) == 1) || (p1.y == p2.y && Math.abs(p1.x - p2.x) == 1);
-    }
-
     public static int getIntFromRange(int max, int min) {
         Random rand = new Random();
         return min + rand.nextInt(max-min);
@@ -81,43 +77,11 @@ public final class Functions {
         return min + rand.nextDouble() * (max - min);
     }
 
-    public static void scheduleEvent(EventScheduler scheduler, Entity entity, Action action, double afterPeriod) {
-        double time = scheduler.currentTime + afterPeriod;
-
-        Event event = new Event(action, time, entity);
-
-        scheduler.eventQueue.add(event);
-
-        // update list of pending events for the given entity
-        List<Event> pending = scheduler.pendingEvents.getOrDefault(entity, new LinkedList<>());
-        pending.add(event);
-        scheduler.pendingEvents.put(entity, pending);
-    }
-
-
-    public static void unscheduleAllEvents(EventScheduler scheduler, Entity entity) {
-        List<Event> pending = scheduler.pendingEvents.remove(entity);
-
-        if (pending != null) {
-            for (Event event : pending) {
-                scheduler.eventQueue.remove(event);
-            }
-        }
-    }
-
-    public static void removePendingEvent(EventScheduler scheduler, Event event) {
-        List<Event> pending = scheduler.pendingEvents.get(event.entity);
-
-        if (pending != null) {
-            pending.remove(event);
-        }
-    }
-
     public static void updateOnTime(EventScheduler scheduler, double time) {
         double stopTime = scheduler.currentTime + time;
         while (!scheduler.eventQueue.isEmpty() && scheduler.eventQueue.peek().time <= stopTime) {
             Event next = scheduler.eventQueue.poll();
-            Functions.removePendingEvent(scheduler, next);
+            scheduler.removePendingEvent(next);
             scheduler.currentTime = next.time;
             next.action.executeAction(scheduler);
         }
@@ -188,7 +152,7 @@ public final class Functions {
     }
 
     public static void tryAddEntity(WorldModel world, Entity entity) {
-        if (isOccupied(world, entity.position)) {
+        if (isOccupied(world, entity.getPosition())) {
             // arguably the wrong type of exception, but we are not
             // defining our own exceptions yet
             throw new IllegalArgumentException("position occupied");
@@ -210,10 +174,10 @@ public final class Functions {
             return Optional.empty();
         } else {
             Entity nearest = entities.get(0);
-            int nearestDistance = distanceSquared(nearest.position, pos);
+            int nearestDistance = distanceSquared(nearest.getPosition(), pos);
 
             for (Entity other : entities) {
-                int otherDistance = distanceSquared(other.position, pos);
+                int otherDistance = distanceSquared(other.getPosition(), pos);
 
                 if (otherDistance < nearestDistance) {
                     nearest = other;
@@ -236,7 +200,7 @@ public final class Functions {
         List<Entity> ofType = new LinkedList<>();
         for (EntityKind kind : kinds) {
             for (Entity entity : world.entities) {
-                if (entity.kind == kind) {
+                if (entity.getKind() == kind) {
                     ofType.add(entity);
                 }
             }
@@ -250,26 +214,26 @@ public final class Functions {
        intended destination cell.
     */
     public static void addEntity(WorldModel world, Entity entity) {
-        if (withinBounds(world, entity.position)) {
-            setOccupancyCell(world, entity.position, entity);
+        if (withinBounds(world, entity.getPosition())) {
+            setOccupancyCell(world, entity.getPosition(), entity);
             world.entities.add(entity);
         }
     }
 
     public static void moveEntity(WorldModel world, EventScheduler scheduler, Entity entity, Point pos) {
-        Point oldPos = entity.position;
+        Point oldPos = entity.getPosition();
         if (withinBounds(world, pos) && !pos.equals(oldPos)) {
             setOccupancyCell(world, oldPos, null);
             Optional<Entity> occupant = getOccupant(world, pos);
             occupant.ifPresent(target -> removeEntity(world, scheduler, target));
             setOccupancyCell(world, pos, entity);
-            entity.position = pos;
+            entity.setPosition(pos);
         }
     }
 
     public static void removeEntity(WorldModel world, EventScheduler scheduler, Entity entity) {
-        unscheduleAllEvents(scheduler, entity);
-        removeEntityAt(world, entity.position);
+        scheduler.unscheduleAllEvents(entity);
+        removeEntityAt(world, entity.getPosition());
     }
 
     public static void removeEntityAt(WorldModel world, Point pos) {
@@ -278,7 +242,7 @@ public final class Functions {
 
             /* This moves the entity just outside of the grid for
              * debugging purposes. */
-            entity.position = new Point(-1, -1);
+            entity.setPosition(new Point(-1, -1));
             world.entities.remove(entity);
             setOccupancyCell(world, pos, null);
         }
@@ -422,7 +386,7 @@ public final class Functions {
         if (object instanceof Background background) {
             return background.images.get(background.imageIndex);
         } else if (object instanceof Entity entity) {
-            return entity.images.get(entity.imageIndex % entity.images.size());
+            return entity.getImages().get(entity.getImageIndex() % entity.getImages().size());
         } else {
             throw new UnsupportedOperationException(String.format("getCurrentImage not supported for %s", object));
         }
@@ -526,7 +490,7 @@ public final class Functions {
 
     public static void drawEntities(WorldView view) {
         for (Entity entity : view.world.entities) {
-            Point pos = entity.position;
+            Point pos = entity.getPosition();
 
             if (contains(view.viewport, pos)) {
                 Point viewPoint = worldToViewport(view.viewport, pos.x, pos.y);
