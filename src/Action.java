@@ -2,11 +2,11 @@
  * An action that can be taken by an entity
  */
 public final class Action {
-    public ActionKind kind;
-    public Entity entity;
-    public WorldModel world;
-    public ImageStore imageStore;
-    public int repeatCount;
+    private ActionKind kind;
+    private Entity entity;
+    private WorldModel world;
+    private ImageStore imageStore;
+    private int repeatCount;
 
     public Action(ActionKind kind, Entity entity, WorldModel world, ImageStore imageStore, int repeatCount) {
         this.kind = kind;
@@ -14,6 +14,26 @@ public final class Action {
         this.world = world;
         this.imageStore = imageStore;
         this.repeatCount = repeatCount;
+    }
+
+    public ActionKind getKind() {
+        return kind;
+    }
+
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public WorldModel getWorld() {
+        return world;
+    }
+
+    public ImageStore getImageStore() {
+        return imageStore;
+    }
+
+    public int getRepeatCount() {
+        return repeatCount;
     }
 
     public void executeActivityAction(EventScheduler scheduler) {

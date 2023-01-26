@@ -31,7 +31,7 @@ public final class EventScheduler {
     }
 
     public void removePendingEvent(Event event) {
-        List<Event> pending = this.getPendingEvents().get(event.getEntity());
+        List<Event> pending = this.pendingEvents.get(event.getEntity());
 
         if (pending != null) {
             pending.remove(event);
@@ -39,26 +39,26 @@ public final class EventScheduler {
     }
 
     public void unscheduleAllEvents(Entity entity) {
-        List<Event> pending = this.getPendingEvents().remove(entity);
+        List<Event> pending = this.pendingEvents.remove(entity);
 
         if (pending != null) {
             for (Event event : pending) {
-                this.getEventQueue().remove(event);
+                this.eventQueue.remove(event);
             }
         }
     }
 
     public void scheduleEvent(Entity entity, Action action, double afterPeriod) {
-        double time = this.getCurrentTime() + afterPeriod;
+        double time = this.currentTime + afterPeriod;
 
         Event event = new Event(action, time, entity);
 
-        this.getEventQueue().add(event);
+        this.eventQueue.add(event);
 
         // update list of pending events for the given entity
-        List<Event> pending = this.getPendingEvents().getOrDefault(entity, new LinkedList<>());
+        List<Event> pending = this.pendingEvents.getOrDefault(entity, new LinkedList<>());
         pending.add(event);
-        this.getPendingEvents().put(entity, pending);
+        this.pendingEvents.put(entity, pending);
     }
 
 

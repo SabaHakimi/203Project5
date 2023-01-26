@@ -79,13 +79,13 @@ public final class VirtualWorld extends PApplet {
     }
 
     public void scheduleActions(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        for (Entity entity : world.entities) {
+        for (Entity entity : world.getEntities()) {
             entity.scheduleActions(scheduler, world, imageStore);
         }
     }
 
     private Point mouseToPoint() {
-        return Functions.viewportToWorld(view.viewport, mouseX / TILE_WIDTH, mouseY / TILE_HEIGHT);
+        return Functions.viewportToWorld(view.getViewport(), mouseX / TILE_WIDTH, mouseY / TILE_HEIGHT);
     }
 
     public void keyPressed() {

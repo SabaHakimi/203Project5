@@ -162,7 +162,7 @@ public final class Functions {
     }
 
     public static boolean withinBounds(WorldModel world, Point pos) {
-        return pos.getY() >= 0 && pos.getY() < world.numRows && pos.getX() >= 0 && pos.getX() < world.numCols;
+        return pos.getY() >= 0 && pos.getY() < world.getNumRows() && pos.getX() >= 0 && pos.getX() < world.getNumCols();
     }
 
     public static boolean isOccupied(WorldModel world, Point pos) {
@@ -199,7 +199,7 @@ public final class Functions {
     public static Optional<Entity> findNearest(WorldModel world, Point pos, List<EntityKind> kinds) {
         List<Entity> ofType = new LinkedList<>();
         for (EntityKind kind : kinds) {
-            for (Entity entity : world.entities) {
+            for (Entity entity : world.getEntities()) {
                 if (entity.getKind() == kind) {
                     ofType.add(entity);
                 }
@@ -216,7 +216,7 @@ public final class Functions {
     public static void addEntity(WorldModel world, Entity entity) {
         if (withinBounds(world, entity.getPosition())) {
             setOccupancyCell(world, entity.getPosition(), entity);
-            world.entities.add(entity);
+            world.getEntities().add(entity);
         }
     }
 
@@ -243,7 +243,7 @@ public final class Functions {
             /* This moves the entity just outside of the grid for
              * debugging purposes. */
             entity.setPosition(new Point(-1, -1));
-            world.entities.remove(entity);
+            world.getEntities().remove(entity);
             setOccupancyCell(world, pos, null);
         }
     }
@@ -258,11 +258,11 @@ public final class Functions {
     }
 
     public static Entity getOccupancyCell(WorldModel world, Point pos) {
-        return world.occupancy[pos.getY()][pos.getX()];
+        return world.getOccupancy()[pos.getY()][pos.getX()];
     }
 
     public static void setOccupancyCell(WorldModel world, Point pos, Entity entity) {
-        world.occupancy[pos.getY()][pos.getX()] = entity;
+        world.getOccupancy()[pos.getY()][pos.getX()] = entity;
     }
 
     public static Action createAnimationAction(Entity entity, int repeatCount) {
@@ -310,14 +310,14 @@ public final class Functions {
 
     public static void load(WorldModel world, Scanner saveFile, ImageStore imageStore, Background defaultBackground){
         parseSaveFile(world, saveFile, imageStore, defaultBackground);
-        if(world.background == null){
-            world.background = new Background[world.numRows][world.numCols];
-            for (Background[] row : world.background)
+        if(world.getBackground() == null){
+            world.setBackground(new Background[world.getNumRows()][world.getNumCols()]);
+            for (Background[] row : world.getBackground())
                 Arrays.fill(row, defaultBackground);
         }
-        if(world.occupancy == null){
-            world.occupancy = new Entity[world.numRows][world.numCols];
-            world.entities = new HashSet<>();
+        if(world.getOccupancy() == null){
+            world.setOccupancy(new Entity[world.getNumRows()][world.getNumCols()]);
+            world.setEntities(new HashSet<>());
         }
     }
     public static void parseSaveFile(WorldModel world, Scanner saveFile, ImageStore imageStore, Background defaultBackground){
@@ -331,16 +331,16 @@ public final class Functions {
                 headerLine = lineCounter;
                 lastHeader = line;
                 switch (line){
-                    case "Backgrounds:" -> world.background = new Background[world.numRows][world.numCols];
+                    case "Backgrounds:" -> world.setBackground(new Background[world.getNumRows()][world.getNumCols()]);
                     case "Entities:" -> {
-                        world.occupancy = new Entity[world.numRows][world.numCols];
-                        world.entities = new HashSet<>();
+                        world.setOccupancy(new Entity[world.getNumRows()][world.getNumCols()]);
+                        world.setEntities(new HashSet<>());
                     }
                 }
             }else{
                 switch (lastHeader){
-                    case "Rows:" -> world.numRows = Integer.parseInt(line);
-                    case "Cols:" -> world.numCols = Integer.parseInt(line);
+                    case "Rows:" -> world.setNumRows(Integer.parseInt(line));
+                    case "Cols:" -> world.setNumCols(Integer.parseInt(line));
                     case "Backgrounds:" -> Functions.parseBackgroundRow(world, line, lineCounter-headerLine-1, imageStore);
                     case "Entities:" -> Functions.parseEntity(world, line, imageStore);
                 }
@@ -349,10 +349,10 @@ public final class Functions {
     }
     public static void parseBackgroundRow(WorldModel world, String line, int row, ImageStore imageStore) {
         String[] cells = line.split(" ");
-        if(row < world.numRows){
-            int rows = Math.min(cells.length, world.numCols);
+        if(row < world.getNumRows()){
+            int rows = Math.min(cells.length, world.getNumCols());
             for (int col = 0; col < rows; col++){
-                world.background[row][col] = new Background(cells[col], Functions.getImageList(imageStore, cells[col]));
+                world.getBackground()[row][col] = new Background(cells[col], Functions.getImageList(imageStore, cells[col]));
             }
         }
     }
@@ -393,19 +393,19 @@ public final class Functions {
     }
 
     public static Background getBackgroundCell(WorldModel world, Point pos) {
-        return world.background[pos.getY()][pos.getX()];
+        return world.getBackground()[pos.getY()][pos.getX()];
     }
 
     public static void setBackgroundCell(WorldModel world, Point pos, Background background) {
-        world.background[pos.getY()][pos.getX()] = background;
+        world.getBackground()[pos.getY()][pos.getX()] = background;
     }
 
     public static Point viewportToWorld(Viewport viewport, int col, int row) {
-        return new Point(col + viewport.col, row + viewport.row);
+        return new Point(col + viewport.getCol(), row + viewport.getRow());
     }
 
     public static Point worldToViewport(Viewport viewport, int col, int row) {
-        return new Point(col - viewport.col, row - viewport.row);
+        return new Point(col - viewport.getCol(), row - viewport.getRow());
     }
 
     public static int clamp(int value, int low, int high) {
@@ -413,10 +413,10 @@ public final class Functions {
     }
 
     public static void shiftView(WorldView view, int colDelta, int rowDelta) {
-        int newCol = clamp(view.viewport.col + colDelta, 0, view.world.numCols - view.viewport.numCols);
-        int newRow = clamp(view.viewport.row + rowDelta, 0, view.world.numRows - view.viewport.numRows);
+        int newCol = clamp(view.getViewport().getCol() + colDelta, 0, view.getWorld().getNumCols() - view.getViewport().getNumCols());
+        int newRow = clamp(view.getViewport().getRow() + rowDelta, 0, view.getWorld().getNumRows() - view.getViewport().getNumRows());
 
-        shift(view.viewport, newCol, newRow);
+        shift(view.getViewport(), newCol, newRow);
     }
 
     public static void processImageLine(Map<String, List<PImage>> images, String line, PApplet screen) {
@@ -460,12 +460,12 @@ public final class Functions {
     }
 
     public static void shift(Viewport viewport, int col, int row) {
-        viewport.col = col;
-        viewport.row = row;
+        viewport.setCol(col);
+        viewport.setRow(row);
     }
 
     public static boolean contains(Viewport viewport, Point p) {
-        return p.getY() >= viewport.row && p.getY() < viewport.row + viewport.numRows && p.getX() >= viewport.col && p.getX() < viewport.col + viewport.numCols;
+        return p.getY() >= viewport.getRow() && p.getY() < viewport.getRow() + viewport.getNumRows() && p.getX() >= viewport.getCol() && p.getX() < viewport.getCol() + viewport.getNumCols();
     }
 
     public static Optional<PImage> getBackgroundImage(WorldModel world, Point pos) {
@@ -477,24 +477,24 @@ public final class Functions {
     }
 
     public static void drawBackground(WorldView view) {
-        for (int row = 0; row < view.viewport.numRows; row++) {
-            for (int col = 0; col < view.viewport.numCols; col++) {
-                Point worldPoint = viewportToWorld(view.viewport, col, row);
-                Optional<PImage> image = getBackgroundImage(view.world, worldPoint);
+        for (int row = 0; row < view.getViewport().getNumRows(); row++) {
+            for (int col = 0; col < view.getViewport().getNumCols(); col++) {
+                Point worldPoint = viewportToWorld(view.getViewport(), col, row);
+                Optional<PImage> image = getBackgroundImage(view.getWorld(), worldPoint);
                 if (image.isPresent()) {
-                    view.screen.image(image.get(), col * view.tileWidth, row * view.tileHeight);
+                    view.getScreen().image(image.get(), col * view.getTileWidth(), row * view.getTileHeight());
                 }
             }
         }
     }
 
     public static void drawEntities(WorldView view) {
-        for (Entity entity : view.world.entities) {
+        for (Entity entity : view.getWorld().getEntities()) {
             Point pos = entity.getPosition();
 
-            if (contains(view.viewport, pos)) {
-                Point viewPoint = worldToViewport(view.viewport, pos.getX(), pos.getY());
-                view.screen.image(getCurrentImage(entity), viewPoint.getX() * view.tileWidth, viewPoint.getY() * view.tileHeight);
+            if (contains(view.getViewport(), pos)) {
+                Point viewPoint = worldToViewport(view.getViewport(), pos.getX(), pos.getY());
+                view.getScreen().image(getCurrentImage(entity), viewPoint.getX() * view.getTileWidth(), viewPoint.getY() * view.getTileHeight());
             }
         }
     }
@@ -504,13 +504,13 @@ public final class Functions {
         drawEntities(view);
     }
     public static List<PImage> getImageList(ImageStore imageStore, String key) {
-        return imageStore.images.getOrDefault(key, imageStore.defaultImages);
+        return imageStore.getImages().getOrDefault(key, imageStore.getDefaultImages());
     }
     public static void loadImages(Scanner in, ImageStore imageStore, PApplet screen) {
         int lineNumber = 0;
         while (in.hasNextLine()) {
             try {
-                processImageLine(imageStore.images, in.nextLine(), screen);
+                processImageLine(imageStore.getImages(), in.nextLine(), screen);
             } catch (NumberFormatException e) {
                 System.out.printf("Image format error on line %d\n", lineNumber);
             }

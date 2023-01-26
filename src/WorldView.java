@@ -1,11 +1,11 @@
 import processing.core.PApplet;
 
 public final class WorldView {
-    public PApplet screen;
-    public WorldModel world;
-    public int tileWidth;
-    public int tileHeight;
-    public Viewport viewport;
+    private PApplet screen;
+    private WorldModel world;
+    private int tileWidth;
+    private int tileHeight;
+    private Viewport viewport;
 
     public WorldView(int numRows, int numCols, PApplet screen, WorldModel world, int tileWidth, int tileHeight) {
         this.screen = screen;
@@ -13,5 +13,25 @@ public final class WorldView {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.viewport = new Viewport(numRows, numCols);
+    }
+
+    public PApplet getScreen() {
+        return screen;
+    }
+
+    public WorldModel getWorld() {
+        return world;
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public int getTileHeight() {
+        return tileHeight;
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }

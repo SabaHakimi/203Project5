@@ -8,14 +8,54 @@ import java.util.Set;
  * location in the world, and the entities that populate the world.
  */
 public final class WorldModel {
-    public int numRows;
-    public int numCols;
-    public Background[][] background;
-    public Entity[][] occupancy;
-    public Set<Entity> entities;
+    private int numRows;
+    private int numCols;
+    private Background[][] background;
+    private Entity[][] occupancy;
+    private Set<Entity> entities;
 
     public WorldModel() {
 
+    }
+
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public void setNumRows(int numRows) {
+        this.numRows = numRows;
+    }
+
+    public int getNumCols() {
+        return numCols;
+    }
+
+    public void setNumCols(int numCols) {
+        this.numCols = numCols;
+    }
+
+    public Background[][] getBackground() {
+        return background;
+    }
+
+    public void setBackground(Background[][] background) {
+        this.background = background;
+    }
+
+    public Entity[][] getOccupancy() {
+        return occupancy;
+    }
+
+    public void setOccupancy(Entity[][] occupancy) {
+        this.occupancy = occupancy;
+    }
+
+    public Set<Entity> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(Set<Entity> entities) {
+        this.entities = entities;
     }
 
     /**
