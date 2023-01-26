@@ -13,16 +13,8 @@ public final class Viewport {
         return this.row;
     }
 
-    public void setRow(int r) {
-        this.row = r;
-    }
-
     public int getCol() {
         return this.col;
-    }
-
-    public void setCol(int c) {
-        this.col = c;
     }
 
     public int getNumRows() {
@@ -31,5 +23,22 @@ public final class Viewport {
 
     public int getNumCols() {
         return this.numCols;
+    }
+
+    public boolean contains(Point p) {
+        return p.y >= this.row && p.y < this.row + this.numRows && p.x >= this.col && p.x < this.col + this.numCols;
+    }
+
+    public void shift(int col, int row) {
+        this.col = col;
+        this.row = row;
+    }
+
+    public Point viewportToWorld(int col, int row) {
+        return new Point(col + this.col, row + this.row);
+    }
+
+    public Point worldToViewport(int col, int row) {
+        return new Point(col - this.col, row - this.row);
     }
 }

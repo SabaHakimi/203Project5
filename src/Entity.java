@@ -49,14 +49,6 @@ public final class Entity {
         position = p;
     }
 
-    public List<PImage> getImages() {
-        return images;
-    }
-
-    public int getImageIndex() {
-        return imageIndex;
-    }
-
     public int getHealth() {
         return health;
     }
@@ -137,7 +129,7 @@ public final class Entity {
 
     private boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
+            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, imageStore.getImageList(Functions.STUMP_KEY));
 
             world.removeEntity(scheduler, this);
 
@@ -145,7 +137,7 @@ public final class Entity {
 
             return true;
         } else if (this.health >= this.healthLimit) {
-            Entity tree = Functions.createTree(Functions.TREE_KEY + "_" + this.id, this.position, Functions.getNumFromRange(Functions.TREE_ACTION_MAX, Functions.TREE_ACTION_MIN), Functions.getNumFromRange(Functions.TREE_ANIMATION_MAX, Functions.TREE_ANIMATION_MIN), Functions.getIntFromRange(Functions.TREE_HEALTH_MAX, Functions.TREE_HEALTH_MIN), Functions.getImageList(imageStore, Functions.TREE_KEY));
+            Entity tree = Functions.createTree(Functions.TREE_KEY + "_" + this.id, this.position, Functions.getNumFromRange(Functions.TREE_ACTION_MAX, Functions.TREE_ACTION_MIN), Functions.getNumFromRange(Functions.TREE_ANIMATION_MAX, Functions.TREE_ANIMATION_MIN), Functions.getIntFromRange(Functions.TREE_HEALTH_MAX, Functions.TREE_HEALTH_MIN), imageStore.getImageList(Functions.TREE_KEY));
 
             world.removeEntity(scheduler, this);
 
@@ -160,7 +152,7 @@ public final class Entity {
 
     private boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
+            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, imageStore.getImageList(Functions.STUMP_KEY));
 
             world.removeEntity(scheduler, this);
 
@@ -246,7 +238,7 @@ public final class Entity {
 
             if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
 
-                Entity sapling = Functions.createSapling(Functions.SAPLING_KEY + "_" + fairyTarget.get().id, tgtPos, Functions.getImageList(imageStore, Functions.SAPLING_KEY), 0);
+                Entity sapling = Functions.createSapling(Functions.SAPLING_KEY + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(Functions.SAPLING_KEY), 0);
 
                 world.addEntity(sapling);
                 sapling.scheduleActions(scheduler, world, imageStore);
@@ -271,14 +263,6 @@ public final class Entity {
         }
     }
 
-    /**
-     * Helper method for testing. Preserve this functionality while refactoring.
-     */
-    public String log(){
-        return this.id.isEmpty() ? null :
-                String.format("%s %d %d %d", this.id, this.position.x, this.position.y, this.imageIndex);
-    }
-
     public double getAnimationPeriod() {
         return switch (this.kind) {
             case DUDE_FULL, DUDE_NOT_FULL, OBSTACLE, FAIRY, SAPLING, TREE -> this.animationPeriod;
@@ -287,7 +271,20 @@ public final class Entity {
         };
     }
 
+    public PImage getCurrentImage() {
+        return this.images.get(this.imageIndex % this.images.size());
+    }
+
     public void nextImage() {
         this.imageIndex = this.imageIndex + 1;
     }
+
+    /**
+     * Helper method for testing. Preserve this functionality while refactoring.
+     */
+    public String log(){
+        return this.id.isEmpty() ? null :
+                String.format("%s %d %d %d", this.id, this.position.x, this.position.y, this.imageIndex);
+    }
+
 }

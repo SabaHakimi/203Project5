@@ -57,7 +57,7 @@ public final class VirtualWorld extends PApplet {
         double appTime = (System.currentTimeMillis() - startTimeMillis) * 0.001;
         double frameTime = (appTime - scheduler.getCurrentTime())/timeScale;
         this.update(frameTime);
-        Functions.drawViewport(view);
+        view.drawViewport();
     }
 
     public void update(double frameTime){
@@ -85,7 +85,7 @@ public final class VirtualWorld extends PApplet {
     }
 
     private Point mouseToPoint() {
-        return Functions.viewportToWorld(view.getViewport(), mouseX / TILE_WIDTH, mouseY / TILE_HEIGHT);
+        return view.getViewport().viewportToWorld(mouseX / TILE_WIDTH, mouseY / TILE_HEIGHT);
     }
 
     public void keyPressed() {
@@ -99,12 +99,12 @@ public final class VirtualWorld extends PApplet {
                 case LEFT -> dx -= 1;
                 case RIGHT -> dx += 1;
             }
-            Functions.shiftView(view, dx, dy);
+            view.shiftView(dx, dy);
         }
     }
 
     public static Background createDefaultBackground(ImageStore imageStore) {
-        return new Background(DEFAULT_IMAGE_NAME, Functions.getImageList(imageStore, DEFAULT_IMAGE_NAME));
+        return new Background(DEFAULT_IMAGE_NAME, imageStore.getImageList(DEFAULT_IMAGE_NAME));
     }
 
     public static PImage createImageColored(int width, int height, int color) {
@@ -119,7 +119,7 @@ public final class VirtualWorld extends PApplet {
         this.imageStore = new ImageStore(createImageColored(TILE_WIDTH, TILE_HEIGHT, DEFAULT_IMAGE_COLOR));
         try {
             Scanner in = new Scanner(new File(filename));
-            Functions.loadImages(in, imageStore,this);
+            imageStore.loadImages(in, this);
         } catch (FileNotFoundException e) {
             System.err.println(e.getMessage());
         }

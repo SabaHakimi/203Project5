@@ -80,7 +80,7 @@ public final class Functions {
     public static void parseSapling(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == SAPLING_NUM_PROPERTIES) {
             int health = Integer.parseInt(properties[SAPLING_HEALTH]);
-            Entity entity = createSapling(id, pt, Functions.getImageList(imageStore, SAPLING_KEY), health);
+            Entity entity = createSapling(id, pt, imageStore.getImageList(SAPLING_KEY), health);
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", SAPLING_KEY, SAPLING_NUM_PROPERTIES));
@@ -89,7 +89,7 @@ public final class Functions {
 
     public static void parseDude(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == DUDE_NUM_PROPERTIES) {
-            Entity entity = createDudeNotFull(id, pt, Double.parseDouble(properties[DUDE_ACTION_PERIOD]), Double.parseDouble(properties[DUDE_ANIMATION_PERIOD]), Integer.parseInt(properties[DUDE_LIMIT]), Functions.getImageList(imageStore, DUDE_KEY));
+            Entity entity = createDudeNotFull(id, pt, Double.parseDouble(properties[DUDE_ACTION_PERIOD]), Double.parseDouble(properties[DUDE_ANIMATION_PERIOD]), Integer.parseInt(properties[DUDE_LIMIT]), imageStore.getImageList(DUDE_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", DUDE_KEY, DUDE_NUM_PROPERTIES));
@@ -98,7 +98,7 @@ public final class Functions {
 
     public static void parseFairy(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == FAIRY_NUM_PROPERTIES) {
-            Entity entity = createFairy(id, pt, Double.parseDouble(properties[FAIRY_ACTION_PERIOD]), Double.parseDouble(properties[FAIRY_ANIMATION_PERIOD]), Functions.getImageList(imageStore, FAIRY_KEY));
+            Entity entity = createFairy(id, pt, Double.parseDouble(properties[FAIRY_ACTION_PERIOD]), Double.parseDouble(properties[FAIRY_ANIMATION_PERIOD]), imageStore.getImageList(FAIRY_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", FAIRY_KEY, FAIRY_NUM_PROPERTIES));
@@ -107,7 +107,7 @@ public final class Functions {
 
     public static void parseTree(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == TREE_NUM_PROPERTIES) {
-            Entity entity = createTree(id, pt, Double.parseDouble(properties[TREE_ACTION_PERIOD]), Double.parseDouble(properties[TREE_ANIMATION_PERIOD]), Integer.parseInt(properties[TREE_HEALTH]), Functions.getImageList(imageStore, TREE_KEY));
+            Entity entity = createTree(id, pt, Double.parseDouble(properties[TREE_ACTION_PERIOD]), Double.parseDouble(properties[TREE_ANIMATION_PERIOD]), Integer.parseInt(properties[TREE_HEALTH]), imageStore.getImageList(TREE_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", TREE_KEY, TREE_NUM_PROPERTIES));
@@ -116,7 +116,7 @@ public final class Functions {
 
     public static void parseObstacle(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == OBSTACLE_NUM_PROPERTIES) {
-            Entity entity = createObstacle(id, pt, Double.parseDouble(properties[OBSTACLE_ANIMATION_PERIOD]), Functions.getImageList(imageStore, OBSTACLE_KEY));
+            Entity entity = createObstacle(id, pt, Double.parseDouble(properties[OBSTACLE_ANIMATION_PERIOD]), imageStore.getImageList(OBSTACLE_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", OBSTACLE_KEY, OBSTACLE_NUM_PROPERTIES));
@@ -125,7 +125,7 @@ public final class Functions {
 
     public static void parseHouse(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == HOUSE_NUM_PROPERTIES) {
-            Entity entity = createHouse(id, pt, Functions.getImageList(imageStore, HOUSE_KEY));
+            Entity entity = createHouse(id, pt, imageStore.getImageList(HOUSE_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", HOUSE_KEY, HOUSE_NUM_PROPERTIES));
@@ -133,7 +133,7 @@ public final class Functions {
     }
     public static void parseStump(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == STUMP_NUM_PROPERTIES) {
-            Entity entity = createStump(id, pt, Functions.getImageList(imageStore, STUMP_KEY));
+            Entity entity = createStump(id, pt, imageStore.getImageList(STUMP_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", STUMP_KEY, STUMP_NUM_PROPERTIES));
@@ -228,41 +228,8 @@ public final class Functions {
         }
     }
 
-    public static PImage getCurrentImage(Object object) {
-        if (object instanceof Background background) {
-            return background.getImages().get(background.getImageIndex());
-        } else if (object instanceof Entity entity) {
-            return entity.getImages().get(entity.getImageIndex() % entity.getImages().size());
-        } else {
-            throw new UnsupportedOperationException(String.format("getCurrentImage not supported for %s", object));
-        }
-    }
-
-    public static Background getBackgroundCell(WorldModel world, Point pos) {
-        return world.getBackground()[pos.y][pos.x];
-    }
-
-    public static void setBackgroundCell(WorldModel world, Point pos, Background background) {
-        world.getBackground()[pos.y][pos.x] = background;
-    }
-
-    public static Point viewportToWorld(Viewport viewport, int col, int row) {
-        return new Point(col + viewport.getCol(), row + viewport.getRow());
-    }
-
-    public static Point worldToViewport(Viewport viewport, int col, int row) {
-        return new Point(col - viewport.getCol(), row - viewport.getRow());
-    }
-
     public static int clamp(int value, int low, int high) {
         return Math.min(high, Math.max(value, low));
-    }
-
-    public static void shiftView(WorldView view, int colDelta, int rowDelta) {
-        int newCol = clamp(view.getViewport().getCol() + colDelta, 0, view.getWorld().getNumCols() - view.getViewport().getNumCols());
-        int newRow = clamp(view.getViewport().getRow() + rowDelta, 0, view.getWorld().getNumRows() - view.getViewport().getNumRows());
-
-        shift(view.getViewport(), newCol, newRow);
     }
 
     public static void processImageLine(Map<String, List<PImage>> images, String line, PApplet screen) {
@@ -305,62 +272,4 @@ public final class Functions {
         img.updatePixels();
     }
 
-    public static void shift(Viewport viewport, int col, int row) {
-        viewport.setCol(col);
-        viewport.setRow(row);
-    }
-
-    public static boolean contains(Viewport viewport, Point p) {
-        return p.y >= viewport.getRow() && p.y < viewport.getRow() + viewport.getNumRows() && p.x >= viewport.getCol() && p.x < viewport.getCol() + viewport.getNumCols();
-    }
-
-    public static Optional<PImage> getBackgroundImage(WorldModel world, Point pos) {
-        if (world.withinBounds(pos)) {
-            return Optional.of(getCurrentImage(getBackgroundCell(world, pos)));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public static void drawBackground(WorldView view) {
-        for (int row = 0; row < view.getViewport().getNumRows(); row++) {
-            for (int col = 0; col < view.getViewport().getNumCols(); col++) {
-                Point worldPoint = viewportToWorld(view.getViewport(), col, row);
-                Optional<PImage> image = getBackgroundImage(view.getWorld(), worldPoint);
-                if (image.isPresent()) {
-                    view.getScreen().image(image.get(), col * view.getTileWidth(), row * view.getTileHeight());
-                }
-            }
-        }
-    }
-
-    public static void drawEntities(WorldView view) {
-        for (Entity entity : view.getWorld().getEntities()) {
-            Point pos = entity.getPosition();
-
-            if (contains(view.getViewport(), pos)) {
-                Point viewPoint = worldToViewport(view.getViewport(), pos.x, pos.y);
-                view.getScreen().image(getCurrentImage(entity), viewPoint.x * view.getTileWidth(), viewPoint.y * view.getTileHeight());
-            }
-        }
-    }
-
-    public static void drawViewport(WorldView view) {
-        drawBackground(view);
-        drawEntities(view);
-    }
-    public static List<PImage> getImageList(ImageStore imageStore, String key) {
-        return imageStore.getImages().getOrDefault(key, imageStore.getDefaultImages());
-    }
-    public static void loadImages(Scanner in, ImageStore imageStore, PApplet screen) {
-        int lineNumber = 0;
-        while (in.hasNextLine()) {
-            try {
-                processImageLine(imageStore.getImages(), in.nextLine(), screen);
-            } catch (NumberFormatException e) {
-                System.out.printf("Image format error on line %d\n", lineNumber);
-            }
-            lineNumber++;
-        }
-    }
 }

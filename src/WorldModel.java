@@ -1,3 +1,5 @@
+import processing.core.PImage;
+
 import java.util.*;
 
 /**
@@ -16,16 +18,20 @@ public final class WorldModel {
 
     }
 
+    public Optional<PImage> getBackgroundImage(Point pos) {
+        if (withinBounds(pos)) {
+            return Optional.of(getBackgroundCell(pos).getCurrentImage());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public int getNumRows() {
         return numRows;
     }
 
     public int getNumCols() {
         return numCols;
-    }
-
-    public Background[][] getBackground() {
-        return background;
     }
 
     public Set<Entity> getEntities() {
@@ -36,7 +42,7 @@ public final class WorldModel {
         return this.occupancy[pos.y][pos.x];
     }
 
-    public void setOccupancyCell(Point pos, Entity entity) {
+    private void setOccupancyCell(Point pos, Entity entity) {
         this.occupancy[pos.y][pos.x] = entity;
     }
 
@@ -44,7 +50,7 @@ public final class WorldModel {
         return withinBounds(pos) && getOccupancyCell(pos) != null;
     }
 
-    public boolean withinBounds(Point pos) {
+    private boolean withinBounds(Point pos) {
         return pos.y >= 0 && pos.y < this.numRows && pos.x >= 0 && pos.x < this.numCols;
     }
 
@@ -54,6 +60,14 @@ public final class WorldModel {
         } else {
             return Optional.empty();
         }
+    }
+
+    private Background getBackgroundCell(Point pos) {
+        return this.background[pos.y][pos.x];
+    }
+
+    public void setBackgroundCell(Point pos, Background background) {
+        this.background[pos.y][pos.x] = background;
     }
 
     // Assumes that there is no entity currently occupying the intended destination cell.
@@ -115,7 +129,17 @@ public final class WorldModel {
         return Functions.nearestEntity(ofType, pos);
     }
 
-    public void parseSaveFile(Scanner saveFile, ImageStore imageStore, Background defaultBackground){
+    private void parseBackgroundRow(String line, int row, ImageStore imageStore) {
+        String[] cells = line.split(" ");
+        if(row < this.numRows){
+            int rows = Math.min(cells.length, this.numCols);
+            for (int col = 0; col < rows; col++){
+                this.background[row][col] = new Background(cells[col], imageStore.getImageList(cells[col]));
+            }
+        }
+    }
+
+    private void parseSaveFile(Scanner saveFile, ImageStore imageStore, Background defaultBackground){
         String lastHeader = "";
         int headerLine = 0;
         int lineCounter = 0;
@@ -153,16 +177,6 @@ public final class WorldModel {
         if(this.occupancy == null){
             this.occupancy = new Entity[this.numRows][this.numCols];
             this.entities = new HashSet<>();
-        }
-    }
-
-    public void parseBackgroundRow(String line, int row, ImageStore imageStore) {
-        String[] cells = line.split(" ");
-        if(row < this.numRows){
-            int rows = Math.min(cells.length, this.numCols);
-            for (int col = 0; col < rows; col++){
-                this.background[row][col] = new Background(cells[col], Functions.getImageList(imageStore, cells[col]));
-            }
         }
     }
 
