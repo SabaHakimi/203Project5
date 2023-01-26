@@ -78,14 +78,14 @@ public final class Functions {
     }
 
     public static void updateOnTime(EventScheduler scheduler, double time) {
-        double stopTime = scheduler.currentTime + time;
-        while (!scheduler.eventQueue.isEmpty() && scheduler.eventQueue.peek().time <= stopTime) {
-            Event next = scheduler.eventQueue.poll();
+        double stopTime = scheduler.getCurrentTime() + time;
+        while (!scheduler.getEventQueue().isEmpty() && scheduler.getEventQueue().peek().getTime() <= stopTime) {
+            Event next = scheduler.getEventQueue().poll();
             scheduler.removePendingEvent(next);
-            scheduler.currentTime = next.time;
-            next.action.executeAction(scheduler);
+            scheduler.setCurrentTime(next.getTime());
+            next.getAction().executeAction(scheduler);
         }
-        scheduler.currentTime = stopTime;
+        scheduler.setCurrentTime(stopTime);
     }
 
     public static void parseSapling(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
@@ -162,7 +162,7 @@ public final class Functions {
     }
 
     public static boolean withinBounds(WorldModel world, Point pos) {
-        return pos.y >= 0 && pos.y < world.numRows && pos.x >= 0 && pos.x < world.numCols;
+        return pos.getY() >= 0 && pos.getY() < world.numRows && pos.getX() >= 0 && pos.getX() < world.numCols;
     }
 
     public static boolean isOccupied(WorldModel world, Point pos) {
@@ -190,8 +190,8 @@ public final class Functions {
     }
 
     public static int distanceSquared(Point p1, Point p2) {
-        int deltaX = p1.x - p2.x;
-        int deltaY = p1.y - p2.y;
+        int deltaX = p1.getX() - p2.getX();
+        int deltaY = p1.getY() - p2.getY();
 
         return deltaX * deltaX + deltaY * deltaY;
     }
@@ -258,11 +258,11 @@ public final class Functions {
     }
 
     public static Entity getOccupancyCell(WorldModel world, Point pos) {
-        return world.occupancy[pos.y][pos.x];
+        return world.occupancy[pos.getY()][pos.getX()];
     }
 
     public static void setOccupancyCell(WorldModel world, Point pos, Entity entity) {
-        world.occupancy[pos.y][pos.x] = entity;
+        world.occupancy[pos.getY()][pos.getX()] = entity;
     }
 
     public static Action createAnimationAction(Entity entity, int repeatCount) {
@@ -393,11 +393,11 @@ public final class Functions {
     }
 
     public static Background getBackgroundCell(WorldModel world, Point pos) {
-        return world.background[pos.y][pos.x];
+        return world.background[pos.getY()][pos.getX()];
     }
 
     public static void setBackgroundCell(WorldModel world, Point pos, Background background) {
-        world.background[pos.y][pos.x] = background;
+        world.background[pos.getY()][pos.getX()] = background;
     }
 
     public static Point viewportToWorld(Viewport viewport, int col, int row) {
@@ -465,7 +465,7 @@ public final class Functions {
     }
 
     public static boolean contains(Viewport viewport, Point p) {
-        return p.y >= viewport.row && p.y < viewport.row + viewport.numRows && p.x >= viewport.col && p.x < viewport.col + viewport.numCols;
+        return p.getY() >= viewport.row && p.getY() < viewport.row + viewport.numRows && p.getX() >= viewport.col && p.getX() < viewport.col + viewport.numCols;
     }
 
     public static Optional<PImage> getBackgroundImage(WorldModel world, Point pos) {
@@ -493,8 +493,8 @@ public final class Functions {
             Point pos = entity.getPosition();
 
             if (contains(view.viewport, pos)) {
-                Point viewPoint = worldToViewport(view.viewport, pos.x, pos.y);
-                view.screen.image(getCurrentImage(entity), viewPoint.x * view.tileWidth, viewPoint.y * view.tileHeight);
+                Point viewPoint = worldToViewport(view.viewport, pos.getX(), pos.getY());
+                view.screen.image(getCurrentImage(entity), viewPoint.getX() * view.tileWidth, viewPoint.getY() * view.tileHeight);
             }
         }
     }

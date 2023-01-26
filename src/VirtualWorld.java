@@ -55,7 +55,7 @@ public final class VirtualWorld extends PApplet {
 
     public void draw() {
         double appTime = (System.currentTimeMillis() - startTimeMillis) * 0.001;
-        double frameTime = (appTime - scheduler.currentTime)/timeScale;
+        double frameTime = (appTime - scheduler.getCurrentTime())/timeScale;
         this.update(frameTime);
         Functions.drawViewport(view);
     }
@@ -68,7 +68,7 @@ public final class VirtualWorld extends PApplet {
     // Be sure to refactor this method as appropriate
     public void mousePressed() {
         Point pressed = mouseToPoint();
-        System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
+        System.out.println("CLICK! " + pressed.getX() + ", " + pressed.getY());
 
         Optional<Entity> entityOptional = Functions.getOccupant(world, pressed);
         if (entityOptional.isPresent()) {
