@@ -33,6 +33,127 @@ public final class Entity {
         this.healthLimit = healthLimit;
     }
 
+    public Point nextPositionDude(WorldModel world, Point destPos) {
+        int horiz = Integer.signum(destPos.x - this.position.x);
+        Point newPos = new Point(this.position.x + horiz, this.position.y);
+
+        if (horiz == 0 || Functions.isOccupied(world, newPos) && Functions.getOccupancyCell(world, newPos).kind != EntityKind.STUMP) {
+            int vert = Integer.signum(destPos.y - this.position.y);
+            newPos = new Point(this.position.x, this.position.y + vert);
+
+            if (vert == 0 || Functions.isOccupied(world, newPos) && Functions.getOccupancyCell(world, newPos).kind != EntityKind.STUMP) {
+                newPos = this.position;
+            }
+        }
+
+        return newPos;
+    }
+
+    public Point nextPositionFairy(WorldModel world, Point destPos) {
+        int horiz = Integer.signum(destPos.x - this.position.x);
+        Point newPos = new Point(this.position.x + horiz, this.position.y);
+
+        if (horiz == 0 || Functions.isOccupied(world, newPos)) {
+            int vert = Integer.signum(destPos.y - this.position.y);
+            newPos = new Point(this.position.x, this.position.y + vert);
+
+            if (vert == 0 || Functions.isOccupied(world, newPos)) {
+                newPos = this.position;
+            }
+        }
+
+        return newPos;
+    }
+
+    public boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
+        if (Functions.adjacent(this.position, target.position)) {
+            return true;
+        } else {
+            Point nextPos = this.nextPositionDude(world, target.position);
+
+            if (!this.position.equals(nextPos)) {
+                Functions.moveEntity(world, scheduler, this, nextPos);
+            }
+            return false;
+        }
+    }
+
+    public boolean moveToNotFull(WorldModel world, Entity target, EventScheduler scheduler) {
+        if (Functions.adjacent(this.position, target.position)) {
+            this.resourceCount += 1;
+            target.health--;
+            return true;
+        } else {
+            Point nextPos = this.nextPositionDude(world, target.position);
+
+            if (!this.position.equals(nextPos)) {
+                Functions.moveEntity(world, scheduler, this, nextPos);
+            }
+            return false;
+        }
+    }
+
+    public boolean moveToFairy(WorldModel world, Entity target, EventScheduler scheduler) {
+        if (Functions.adjacent(this.position, target.position)) {
+            Functions.removeEntity(world, scheduler, target);
+            return true;
+        } else {
+            Point nextPos = this.nextPositionFairy(world, target.position);
+
+            if (!this.position.equals(nextPos)) {
+                Functions.moveEntity(world, scheduler, this, nextPos);
+            }
+            return false;
+        }
+    }
+
+    public boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+        if (this.health <= 0) {
+            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
+
+            Functions.removeEntity(world, scheduler, this);
+
+            Functions.addEntity(world, stump);
+
+            return true;
+        } else if (this.health >= this.healthLimit) {
+            Entity tree = Functions.createTree(Functions.TREE_KEY + "_" + this.id, this.position, Functions.getNumFromRange(Functions.TREE_ACTION_MAX, Functions.TREE_ACTION_MIN), Functions.getNumFromRange(Functions.TREE_ANIMATION_MAX, Functions.TREE_ANIMATION_MIN), Functions.getIntFromRange(Functions.TREE_HEALTH_MAX, Functions.TREE_HEALTH_MIN), Functions.getImageList(imageStore, Functions.TREE_KEY));
+
+            Functions.removeEntity(world, scheduler, this);
+
+            Functions.addEntity(world, tree);
+            tree.scheduleActions(scheduler, world, imageStore);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+        if (this.health <= 0) {
+            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
+
+            Functions.removeEntity(world, scheduler, this);
+
+            Functions.addEntity(world, stump);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean transformPlant(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+        if (this.kind == EntityKind.TREE) {
+            return this.transformTree(world, scheduler, imageStore);
+        } else if (this.kind == EntityKind.SAPLING) {
+            return this.transformSapling(world, scheduler, imageStore);
+        } else {
+            throw new UnsupportedOperationException(String.format("transformPlant not supported for %s", this));
+        }
+    }
+
     public void transformFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         Entity dude = Functions.createDudeNotFull(this.id, this.position, this.actionPeriod, this.animationPeriod, this.resourceLimit, this.images);
 
@@ -96,7 +217,7 @@ public final class Entity {
     public void executeDudeFullActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         Optional<Entity> fullTarget = Functions.findNearest(world, this.position, new ArrayList<>(List.of(EntityKind.HOUSE)));
 
-        if (fullTarget.isPresent() && Functions.moveToFull(this, world, fullTarget.get(), scheduler)) {
+        if (fullTarget.isPresent() && this.moveToFull(world, fullTarget.get(), scheduler)) {
             this.transformFull(world, scheduler, imageStore);
         } else {
             Functions.scheduleEvent(scheduler, this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
@@ -106,7 +227,7 @@ public final class Entity {
     public void executeDudeNotFullActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         Optional<Entity> target = Functions.findNearest(world, this.position, new ArrayList<>(Arrays.asList(EntityKind.TREE, EntityKind.SAPLING)));
 
-        if (target.isEmpty() || !Functions.moveToNotFull(this, world, target.get(), scheduler) || !this.transformNotFull(world, scheduler, imageStore)) {
+        if (target.isEmpty() || !this.moveToNotFull(world, target.get(), scheduler) || !this.transformNotFull(world, scheduler, imageStore)) {
             Functions.scheduleEvent(scheduler, this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
@@ -117,7 +238,7 @@ public final class Entity {
         if (fairyTarget.isPresent()) {
             Point tgtPos = fairyTarget.get().position;
 
-            if (Functions.moveToFairy(this, world, fairyTarget.get(), scheduler)) {
+            if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
 
                 Entity sapling = Functions.createSapling(Functions.SAPLING_KEY + "_" + fairyTarget.get().id, tgtPos, Functions.getImageList(imageStore, Functions.SAPLING_KEY), 0);
 
@@ -131,7 +252,7 @@ public final class Entity {
 
     public void executeTreeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
 
-        if (!Functions.transformPlant(this, world, scheduler, imageStore)) {
+        if (!this.transformPlant(world, scheduler, imageStore)) {
 
             Functions.scheduleEvent(scheduler, this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
@@ -139,7 +260,7 @@ public final class Entity {
 
     public void executeSaplingActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         this.health++;
-        if (!Functions.transformPlant(this, world, scheduler, imageStore)) {
+        if (!this.transformPlant(world, scheduler, imageStore)) {
             Functions.scheduleEvent(scheduler, this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
