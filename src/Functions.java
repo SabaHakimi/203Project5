@@ -373,7 +373,7 @@ public final class Functions {
 
     public static PImage getCurrentImage(Object object) {
         if (object instanceof Background background) {
-            return background.images.get(background.imageIndex);
+            return background.getImages().get(background.getImageIndex());
         } else if (object instanceof Entity entity) {
             return entity.getImages().get(entity.getImageIndex() % entity.getImages().size());
         } else {

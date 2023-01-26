@@ -7,17 +7,17 @@ import processing.core.PImage;
  * different kinds of entities that exist.
  */
 public final class Entity {
-    private EntityKind kind;
-    private String id;
+    private final EntityKind kind;
+    private final String id;
     private Point position;
-    private List<PImage> images;
+    private final List<PImage> images;
     private int imageIndex;
-    private int resourceLimit;
+    private final int resourceLimit;
     private int resourceCount;
-    private double actionPeriod;
-    private double animationPeriod;
+    private final double actionPeriod;
+    private final double animationPeriod;
     private int health;
-    private int healthLimit;
+    private final int healthLimit;
 
     public Entity(EntityKind kind, String id, Point position, List<PImage> images, int resourceLimit, int resourceCount, double actionPeriod, double animationPeriod, int health, int healthLimit) {
         this.kind = kind;
@@ -57,27 +57,11 @@ public final class Entity {
         return imageIndex;
     }
 
-    public int getResourceLimit() {
-        return resourceLimit;
-    }
-
-    public int getResourceCount() {
-        return resourceCount;
-    }
-
-    public double getActionPeriod() {
-        return actionPeriod;
-    }
-
     public int getHealth() {
         return health;
     }
 
-    public int getHealthLimit() {
-        return healthLimit;
-    }
-
-    public Point nextPositionDude(WorldModel world, Point destPos) {
+    private Point nextPositionDude(WorldModel world, Point destPos) {
         int horiz = Integer.signum(destPos.x - this.position.x);
         Point newPos = new Point(this.position.x + horiz, this.position.y);
 
@@ -93,7 +77,7 @@ public final class Entity {
         return newPos;
     }
 
-    public Point nextPositionFairy(WorldModel world, Point destPos) {
+    private Point nextPositionFairy(WorldModel world, Point destPos) {
         int horiz = Integer.signum(destPos.x - this.position.x);
         Point newPos = new Point(this.position.x + horiz, this.position.y);
 
@@ -109,7 +93,7 @@ public final class Entity {
         return newPos;
     }
 
-    public boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
+    private boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
         if (this.position.adjacent(target.position)) {
             return true;
         } else {
@@ -122,7 +106,7 @@ public final class Entity {
         }
     }
 
-    public boolean moveToNotFull(WorldModel world, Entity target, EventScheduler scheduler) {
+    private boolean moveToNotFull(WorldModel world, Entity target, EventScheduler scheduler) {
         if (this.position.adjacent(target.position)) {
             this.resourceCount = this.resourceCount + 1;
             target.health = target.health - 1;
@@ -137,7 +121,7 @@ public final class Entity {
         }
     }
 
-    public boolean moveToFairy(WorldModel world, Entity target, EventScheduler scheduler) {
+    private boolean moveToFairy(WorldModel world, Entity target, EventScheduler scheduler) {
         if (this.position.adjacent(target.position)) {
             Functions.removeEntity(world, scheduler, target);
             return true;
@@ -151,7 +135,7 @@ public final class Entity {
         }
     }
 
-    public boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    private boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
             Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
 
@@ -174,7 +158,7 @@ public final class Entity {
         return false;
     }
 
-    public boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    private boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
             Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, Functions.getImageList(imageStore, Functions.STUMP_KEY));
 
@@ -188,7 +172,7 @@ public final class Entity {
         return false;
     }
 
-    public boolean transformPlant(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    private boolean transformPlant(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.kind == EntityKind.TREE) {
             return this.transformTree(world, scheduler, imageStore);
         } else if (this.kind == EntityKind.SAPLING) {
@@ -198,7 +182,7 @@ public final class Entity {
         }
     }
 
-    public void transformFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    private void transformFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         Entity dude = Functions.createDudeNotFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
 
         Functions.removeEntity(world, scheduler, this);
@@ -207,7 +191,7 @@ public final class Entity {
         dude.scheduleActions(scheduler, world, imageStore);
     }
 
-    public boolean transformNotFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    private boolean transformNotFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.resourceCount >= this.resourceLimit) {
             Entity dude = Functions.createDudeFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
 
@@ -225,36 +209,14 @@ public final class Entity {
 
     public void scheduleActions(EventScheduler scheduler, WorldModel world, ImageStore imageStore) {
         switch (this.kind) {
-            case DUDE_FULL:
+            case DUDE_FULL, DUDE_NOT_FULL, FAIRY, SAPLING, TREE -> {
                 scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
                 scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            case DUDE_NOT_FULL:
-                scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            case OBSTACLE:
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            case FAIRY:
-                scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            case SAPLING:
-                scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            case TREE:
-                scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
-                break;
-
-            default:
+            }
+            case OBSTACLE ->
+                    scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
+            default -> {
+            }
         }
     }
 
@@ -318,17 +280,11 @@ public final class Entity {
     }
 
     public double getAnimationPeriod() {
-        switch (this.kind) {
-            case DUDE_FULL:
-            case DUDE_NOT_FULL:
-            case OBSTACLE:
-            case FAIRY:
-            case SAPLING:
-            case TREE:
-                return this.animationPeriod;
-            default:
-                throw new UnsupportedOperationException(String.format("getAnimationPeriod not supported for %s", this.kind));
-        }
+        return switch (this.kind) {
+            case DUDE_FULL, DUDE_NOT_FULL, OBSTACLE, FAIRY, SAPLING, TREE -> this.animationPeriod;
+            default ->
+                    throw new UnsupportedOperationException(String.format("getAnimationPeriod not supported for %s", this.kind));
+        };
     }
 
     public void nextImage() {

@@ -14,35 +14,27 @@ public final class EventScheduler {
         this.currentTime = 0;
     }
 
-    public PriorityQueue<Event> getEventQueue() {
-        return eventQueue;
-    }
-
     public double getCurrentTime() {
         return currentTime;
     }
 
-    public void setCurrentTime(double t) {
-        currentTime = t;
-    }
-
-    public void updateOnTime(double time) {
-        double stopTime = getCurrentTime() + time;
-        while (!getEventQueue().isEmpty() && getEventQueue().peek().getTime() <= stopTime) {
-            Event next = getEventQueue().poll();
-            removePendingEvent(next);
-            setCurrentTime(next.getTime());
-            next.getAction().executeAction(this);
-        }
-        setCurrentTime(stopTime);
-    }
-
-    public void removePendingEvent(Event event) {
+    private void removePendingEvent(Event event) {
         List<Event> pending = this.pendingEvents.get(event.getEntity());
 
         if (pending != null) {
             pending.remove(event);
         }
+    }
+
+    public void updateOnTime(double time) {
+        double stopTime = getCurrentTime() + time;
+        while (!this.eventQueue.isEmpty() && this.eventQueue.peek().getTime() <= stopTime) {
+            Event next = this.eventQueue.poll();
+            removePendingEvent(next);
+            this.currentTime = next.getTime();
+            next.getAction().executeAction(this);
+        }
+        this.currentTime = stopTime;
     }
 
     public void unscheduleAllEvents(Entity entity) {
