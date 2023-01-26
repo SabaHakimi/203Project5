@@ -27,7 +27,7 @@ public final class EventScheduler {
     }
 
     public void updateOnTime(double time) {
-        double stopTime = getCurrentTime() + time;
+        double stopTime = this.currentTime + time;
         while (!this.eventQueue.isEmpty() && this.eventQueue.peek().getTime() <= stopTime) {
             Event next = this.eventQueue.poll();
             removePendingEvent(next);

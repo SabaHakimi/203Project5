@@ -70,7 +70,7 @@ public final class VirtualWorld extends PApplet {
         Point pressed = mouseToPoint();
         System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
 
-        Optional<Entity> entityOptional = Functions.getOccupant(world, pressed);
+        Optional<Entity> entityOptional = world.getOccupant(pressed);
         if (entityOptional.isPresent()) {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getKind() + " : " + entity.getHealth());
@@ -129,10 +129,10 @@ public final class VirtualWorld extends PApplet {
         this.world = new WorldModel();
         try {
             Scanner in = new Scanner(new File(file));
-            Functions.load(world, in, imageStore, createDefaultBackground(imageStore));
+            world.load(in, imageStore, createDefaultBackground(imageStore));
         } catch (FileNotFoundException e) {
             Scanner in = new Scanner(file);
-            Functions.load(world, in, imageStore, createDefaultBackground(imageStore));
+            world.load(in, imageStore, createDefaultBackground(imageStore));
         }
     }
 
