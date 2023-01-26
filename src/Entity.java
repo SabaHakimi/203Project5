@@ -129,7 +129,7 @@ public final class Entity {
 
     private boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, imageStore.getImageList(Functions.STUMP_KEY));
+            Entity stump = Functions.createStump(Functions.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(Functions.getStumpKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -137,7 +137,7 @@ public final class Entity {
 
             return true;
         } else if (this.health >= this.healthLimit) {
-            Entity tree = Functions.createTree(Functions.TREE_KEY + "_" + this.id, this.position, Functions.getNumFromRange(Functions.TREE_ACTION_MAX, Functions.TREE_ACTION_MIN), Functions.getNumFromRange(Functions.TREE_ANIMATION_MAX, Functions.TREE_ANIMATION_MIN), Functions.getIntFromRange(Functions.TREE_HEALTH_MAX, Functions.TREE_HEALTH_MIN), imageStore.getImageList(Functions.TREE_KEY));
+            Entity tree = Functions.createTree(Functions.getTreeKey() + "_" + this.id, this.position, Functions.getNumFromRange(Functions.getTreeActionMax(), Functions.getTreeActionMin()), Functions.getNumFromRange(Functions.getTreeAnimationMax(), Functions.getTreeAnimationMin()), Functions.getIntFromRange(Functions.getTreeHealthMax(), Functions.getTreeHealthMin()), imageStore.getImageList(Functions.getTreeKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -152,7 +152,7 @@ public final class Entity {
 
     private boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.STUMP_KEY + "_" + this.id, this.position, imageStore.getImageList(Functions.STUMP_KEY));
+            Entity stump = Functions.createStump(Functions.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(Functions.getStumpKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -238,7 +238,7 @@ public final class Entity {
 
             if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
 
-                Entity sapling = Functions.createSapling(Functions.SAPLING_KEY + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(Functions.SAPLING_KEY), 0);
+                Entity sapling = Functions.createSapling(Functions.getSaplingKey() + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(Functions.getSaplingKey()), 0);
 
                 world.addEntity(sapling);
                 sapling.scheduleActions(scheduler, world, imageStore);
