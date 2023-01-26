@@ -66,41 +66,11 @@ public final class Functions {
     public static final int TREE_HEALTH_MAX = 3;
     public static final int TREE_HEALTH_MIN = 1;
 
-    public static double getAnimationPeriod(Entity entity) {
-        switch (entity.kind) {
-            case DUDE_FULL:
-            case DUDE_NOT_FULL:
-            case OBSTACLE:
-            case FAIRY:
-            case SAPLING:
-            case TREE:
-                return entity.animationPeriod;
-            default:
-                throw new UnsupportedOperationException(String.format("getAnimationPeriod not supported for %s", entity.kind));
-        }
-    }
-
-    public static void nextImage(Entity entity) {
-        entity.imageIndex = entity.imageIndex + 1;
-    }
-
-    public static void executeAction(Action action, EventScheduler scheduler) {
-        switch (action.kind) {
-            case ACTIVITY:
-                executeActivityAction(action, scheduler);
-                break;
-
-            case ANIMATION:
-                executeAnimationAction(action, scheduler);
-                break;
-        }
-    }
-
     public static void executeAnimationAction(Action action, EventScheduler scheduler) {
-        nextImage(action.entity);
+        action.entity.nextImage();
 
         if (action.repeatCount != 1) {
-            scheduleEvent(scheduler, action.entity, createAnimationAction(action.entity, Math.max(action.repeatCount - 1, 0)), getAnimationPeriod(action.entity));
+            scheduleEvent(scheduler, action.entity, createAnimationAction(action.entity, Math.max(action.repeatCount - 1, 0)), action.entity.getAnimationPeriod());
         }
     }
 
@@ -182,31 +152,31 @@ public final class Functions {
         switch (entity.kind) {
             case DUDE_FULL:
                 scheduleEvent(scheduler, entity, createActivityAction(entity, world, imageStore), entity.actionPeriod);
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             case DUDE_NOT_FULL:
                 scheduleEvent(scheduler, entity, createActivityAction(entity, world, imageStore), entity.actionPeriod);
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             case OBSTACLE:
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             case FAIRY:
                 scheduleEvent(scheduler, entity, createActivityAction(entity, world, imageStore), entity.actionPeriod);
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             case SAPLING:
                 scheduleEvent(scheduler, entity, createActivityAction(entity, world, imageStore), entity.actionPeriod);
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             case TREE:
                 scheduleEvent(scheduler, entity, createActivityAction(entity, world, imageStore), entity.actionPeriod);
-                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), getAnimationPeriod(entity));
+                scheduleEvent(scheduler, entity, createAnimationAction(entity, 0), entity.getAnimationPeriod());
                 break;
 
             default:
@@ -413,7 +383,7 @@ public final class Functions {
             Event next = scheduler.eventQueue.poll();
             Functions.removePendingEvent(scheduler, next);
             scheduler.currentTime = next.time;
-            Functions.executeAction(next.action, scheduler);
+            next.action.executeAction(scheduler);
         }
         scheduler.currentTime = stopTime;
     }

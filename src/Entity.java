@@ -41,4 +41,22 @@ public final class Entity {
         return this.id.isEmpty() ? null :
                 String.format("%s %d %d %d", this.id, this.position.x, this.position.y, this.imageIndex);
     }
+
+    public double getAnimationPeriod() {
+        switch (this.kind) {
+            case DUDE_FULL:
+            case DUDE_NOT_FULL:
+            case OBSTACLE:
+            case FAIRY:
+            case SAPLING:
+            case TREE:
+                return this.animationPeriod;
+            default:
+                throw new UnsupportedOperationException(String.format("getAnimationPeriod not supported for %s", this.kind));
+        }
+    }
+
+    public void nextImage() {
+        this.imageIndex = this.imageIndex + 1;
+    }
 }
