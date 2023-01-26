@@ -78,12 +78,12 @@ public final class Entity {
     }
 
     public Point nextPositionDude(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.getX() - this.position.getX());
-        Point newPos = new Point(this.position.getX() + horiz, this.position.getY());
+        int horiz = Integer.signum(destPos.x - this.position.x);
+        Point newPos = new Point(this.position.x + horiz, this.position.y);
 
         if (horiz == 0 || Functions.isOccupied(world, newPos) && Functions.getOccupancyCell(world, newPos).kind != EntityKind.STUMP) {
-            int vert = Integer.signum(destPos.getY() - this.position.getY());
-            newPos = new Point(this.position.getX(), this.position.getY() + vert);
+            int vert = Integer.signum(destPos.y - this.position.y);
+            newPos = new Point(this.position.x, this.position.y + vert);
 
             if (vert == 0 || Functions.isOccupied(world, newPos) && Functions.getOccupancyCell(world, newPos).kind != EntityKind.STUMP) {
                 newPos = this.position;
@@ -94,12 +94,12 @@ public final class Entity {
     }
 
     public Point nextPositionFairy(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.getX() - this.position.getX());
-        Point newPos = new Point(this.position.getX() + horiz, this.position.getY());
+        int horiz = Integer.signum(destPos.x - this.position.x);
+        Point newPos = new Point(this.position.x + horiz, this.position.y);
 
         if (horiz == 0 || Functions.isOccupied(world, newPos)) {
-            int vert = Integer.signum(destPos.getY() - this.position.getY());
-            newPos = new Point(this.position.getX(), this.position.getY() + vert);
+            int vert = Integer.signum(destPos.y - this.position.y);
+            newPos = new Point(this.position.x, this.position.y + vert);
 
             if (vert == 0 || Functions.isOccupied(world, newPos)) {
                 newPos = this.position;
@@ -314,7 +314,7 @@ public final class Entity {
      */
     public String log(){
         return this.id.isEmpty() ? null :
-                String.format("%s %d %d %d", this.id, this.position.getX(), this.position.getY(), this.imageIndex);
+                String.format("%s %d %d %d", this.id, this.position.x, this.position.y, this.imageIndex);
     }
 
     public double getAnimationPeriod() {

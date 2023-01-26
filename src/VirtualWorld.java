@@ -61,14 +61,14 @@ public final class VirtualWorld extends PApplet {
     }
 
     public void update(double frameTime){
-        Functions.updateOnTime(scheduler, frameTime);
+        scheduler.updateOnTime(frameTime);
     }
 
     // Just for debugging and for P5
     // Be sure to refactor this method as appropriate
     public void mousePressed() {
         Point pressed = mouseToPoint();
-        System.out.println("CLICK! " + pressed.getX() + ", " + pressed.getY());
+        System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
 
         Optional<Entity> entityOptional = Functions.getOccupant(world, pressed);
         if (entityOptional.isPresent()) {
