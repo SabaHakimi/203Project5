@@ -18,11 +18,23 @@ public final class WorldModel {
 
     }
 
-    public Optional<PImage> getBackgroundImage(Point pos) {
-        if (withinBounds(pos)) {
-            return Optional.of(getBackgroundCell(pos).getCurrentImage());
-        } else {
+    private static Optional<Entity> nearestEntity(List<Entity> entities, Point pos) {
+        if (entities.isEmpty()) {
             return Optional.empty();
+        } else {
+            Entity nearest = entities.get(0);
+            int nearestDistance = nearest.getPosition().distanceSquared(pos);
+
+            for (Entity other : entities) {
+                int otherDistance = other.getPosition().distanceSquared(pos);
+
+                if (otherDistance < nearestDistance) {
+                    nearest = other;
+                    nearestDistance = otherDistance;
+                }
+            }
+
+            return Optional.of(nearest);
         }
     }
 
@@ -57,6 +69,14 @@ public final class WorldModel {
     public Optional<Entity> getOccupant(Point pos) {
         if (isOccupied(pos)) {
             return Optional.of(getOccupancyCell(pos));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<PImage> getBackgroundImage(Point pos) {
+        if (withinBounds(pos)) {
+            return Optional.of(getBackgroundCell(pos).getCurrentImage());
         } else {
             return Optional.empty();
         }
@@ -126,7 +146,7 @@ public final class WorldModel {
             }
         }
 
-        return Functions.nearestEntity(ofType, pos);
+        return nearestEntity(ofType, pos);
     }
 
     private void parseBackgroundRow(String line, int row, ImageStore imageStore) {
@@ -161,7 +181,7 @@ public final class WorldModel {
                     case "Rows:" -> this.numRows = Integer.parseInt(line);
                     case "Cols:" -> this.numCols = Integer.parseInt(line);
                     case "Backgrounds:" -> this.parseBackgroundRow(line, lineCounter-headerLine-1, imageStore);
-                    case "Entities:" -> Functions.parseEntity(this, line, imageStore);
+                    case "Entities:" -> EntityParsing.parseEntity(this, line, imageStore);
                 }
             }
         }

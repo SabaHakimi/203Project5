@@ -7,6 +7,7 @@ import processing.core.PImage;
  * different kinds of entities that exist.
  */
 public final class Entity {
+
     private final EntityKind kind;
     private final String id;
     private Point position;
@@ -18,6 +19,12 @@ public final class Entity {
     private final double animationPeriod;
     private int health;
     private final int healthLimit;
+    private static final double TREE_ANIMATION_MAX = 0.600;
+    private static final double TREE_ANIMATION_MIN = 0.050;
+    private static final double TREE_ACTION_MAX = 1.400;
+    private static final double TREE_ACTION_MIN = 1.000;
+    private static final int TREE_HEALTH_MAX = 3;
+    private static final int TREE_HEALTH_MIN = 1;
 
     public Entity(EntityKind kind, String id, Point position, List<PImage> images, int resourceLimit, int resourceCount, double actionPeriod, double animationPeriod, int health, int healthLimit) {
         this.kind = kind;
@@ -51,6 +58,16 @@ public final class Entity {
 
     public int getHealth() {
         return health;
+    }
+
+    private static int getIntFromRange(int max, int min) {
+        Random rand = new Random();
+        return min + rand.nextInt(max-min);
+    }
+
+    private static double getNumFromRange(double max, double min) {
+        Random rand = new Random();
+        return min + rand.nextDouble() * (max - min);
     }
 
     private Point nextPositionDude(WorldModel world, Point destPos) {
@@ -129,7 +146,7 @@ public final class Entity {
 
     private boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(Functions.getStumpKey()));
+            Entity stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(EntityParsing.getStumpKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -137,7 +154,7 @@ public final class Entity {
 
             return true;
         } else if (this.health >= this.healthLimit) {
-            Entity tree = Functions.createTree(Functions.getTreeKey() + "_" + this.id, this.position, Functions.getNumFromRange(Functions.getTreeActionMax(), Functions.getTreeActionMin()), Functions.getNumFromRange(Functions.getTreeAnimationMax(), Functions.getTreeAnimationMin()), Functions.getIntFromRange(Functions.getTreeHealthMax(), Functions.getTreeHealthMin()), imageStore.getImageList(Functions.getTreeKey()));
+            Entity tree = Factory.createTree(EntityParsing.getTreeKey() + "_" + this.id, this.position, getNumFromRange(TREE_ACTION_MAX, TREE_ACTION_MIN), getNumFromRange(TREE_ANIMATION_MAX, TREE_ANIMATION_MIN), getIntFromRange(TREE_HEALTH_MAX, TREE_HEALTH_MIN), imageStore.getImageList(EntityParsing.getTreeKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -152,7 +169,7 @@ public final class Entity {
 
     private boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Entity stump = Functions.createStump(Functions.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(Functions.getStumpKey()));
+            Entity stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(EntityParsing.getStumpKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -175,7 +192,7 @@ public final class Entity {
     }
 
     private void transformFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        Entity dude = Functions.createDudeNotFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
+        Entity dude = Factory.createDudeNotFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
 
         world.removeEntity(scheduler, this);
 
@@ -185,7 +202,7 @@ public final class Entity {
 
     private boolean transformNotFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.resourceCount >= this.resourceLimit) {
-            Entity dude = Functions.createDudeFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
+            Entity dude = Factory.createDudeFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
 
             world.removeEntity(scheduler, this);
             scheduler.unscheduleAllEvents(this);
@@ -202,11 +219,11 @@ public final class Entity {
     public void scheduleActions(EventScheduler scheduler, WorldModel world, ImageStore imageStore) {
         switch (this.kind) {
             case DUDE_FULL, DUDE_NOT_FULL, FAIRY, SAPLING, TREE -> {
-                scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
-                scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
+                scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
+                scheduler.scheduleEvent(this, Factory.createAnimationAction(this, 0), getAnimationPeriod());
             }
             case OBSTACLE ->
-                    scheduler.scheduleEvent(this, Functions.createAnimationAction(this, 0), getAnimationPeriod());
+                    scheduler.scheduleEvent(this, Factory.createAnimationAction(this, 0), getAnimationPeriod());
             default -> {
             }
         }
@@ -218,7 +235,7 @@ public final class Entity {
         if (fullTarget.isPresent() && this.moveToFull(world, fullTarget.get(), scheduler)) {
             this.transformFull(world, scheduler, imageStore);
         } else {
-            scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
+            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
 
@@ -226,7 +243,7 @@ public final class Entity {
         Optional<Entity> target = world.findNearest(this.position, new ArrayList<>(Arrays.asList(EntityKind.TREE, EntityKind.SAPLING)));
 
         if (target.isEmpty() || !this.moveToNotFull(world, target.get(), scheduler) || !this.transformNotFull(world, scheduler, imageStore)) {
-            scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
+            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
 
@@ -238,28 +255,28 @@ public final class Entity {
 
             if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
 
-                Entity sapling = Functions.createSapling(Functions.getSaplingKey() + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(Functions.getSaplingKey()), 0);
+                Entity sapling = Factory.createSapling(EntityParsing.getSaplingKey() + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(EntityParsing.getSaplingKey()), 0);
 
                 world.addEntity(sapling);
                 sapling.scheduleActions(scheduler, world, imageStore);
             }
         }
 
-        scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
+        scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
     }
 
     public void executeTreeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
 
         if (!this.transformPlant(world, scheduler, imageStore)) {
 
-            scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
+            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
 
     public void executeSaplingActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         this.health = this.health + 1;
         if (!this.transformPlant(world, scheduler, imageStore)) {
-            scheduler.scheduleEvent(this, Functions.createActivityAction(this, world, imageStore), this.actionPeriod);
+            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
 
