@@ -18,15 +18,27 @@ public final class WorldModel {
 
     }
 
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public int getNumCols() {
+        return numCols;
+    }
+
+    public Set<Entity> getEntities() {
+        return entities;
+    }
+
     private static Optional<Entity> nearestEntity(List<Entity> entities, Point pos) {
         if (entities.isEmpty()) {
             return Optional.empty();
         } else {
             Entity nearest = entities.get(0);
-            int nearestDistance = nearest.getPosition().distanceSquared(pos);
+            int nearestDistance = distanceSquared(nearest.getPosition(), pos);
 
             for (Entity other : entities) {
-                int otherDistance = other.getPosition().distanceSquared(pos);
+                int otherDistance = distanceSquared(other.getPosition(), pos);
 
                 if (otherDistance < nearestDistance) {
                     nearest = other;
@@ -38,16 +50,11 @@ public final class WorldModel {
         }
     }
 
-    public int getNumRows() {
-        return numRows;
-    }
+    private static int distanceSquared(Point p1, Point p2) {
+        int deltaX = p1.x - p2.x;
+        int deltaY = p1.y - p2.y;
 
-    public int getNumCols() {
-        return numCols;
-    }
-
-    public Set<Entity> getEntities() {
-        return entities;
+        return deltaX * deltaX + deltaY * deltaY;
     }
 
     public Entity getOccupancyCell(Point pos) {
@@ -84,10 +91,6 @@ public final class WorldModel {
 
     private Background getBackgroundCell(Point pos) {
         return this.background[pos.y][pos.x];
-    }
-
-    public void setBackgroundCell(Point pos, Background background) {
-        this.background[pos.y][pos.x] = background;
     }
 
     // Assumes that there is no entity currently occupying the intended destination cell.

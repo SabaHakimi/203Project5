@@ -70,6 +70,10 @@ public final class Entity {
         return min + rand.nextDouble() * (max - min);
     }
 
+    public static boolean adjacent(Point p1, Point p2) {
+        return (p1.x == p2.x && Math.abs(p1.y - p2.y) == 1) || (p1.y == p2.y && Math.abs(p1.x - p2.x) == 1);
+    }
+
     private Point nextPositionDude(WorldModel world, Point destPos) {
         int horiz = Integer.signum(destPos.x - this.position.x);
         Point newPos = new Point(this.position.x + horiz, this.position.y);
@@ -84,6 +88,34 @@ public final class Entity {
         }
 
         return newPos;
+    }
+
+    private boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
+        if (adjacent(this.position, target.position)) {
+            return true;
+        } else {
+            Point nextPos = this.nextPositionDude(world, target.position);
+
+            if (!this.position.equals(nextPos)) {
+                world.moveEntity(scheduler, this, nextPos);
+            }
+            return false;
+        }
+    }
+
+    private boolean moveToNotFull(WorldModel world, Entity target, EventScheduler scheduler) {
+        if (adjacent(this.position, target.position)) {
+            this.resourceCount = this.resourceCount + 1;
+            target.health = target.health - 1;
+            return true;
+        } else {
+            Point nextPos = this.nextPositionDude(world, target.position);
+
+            if (!this.position.equals(nextPos)) {
+                world.moveEntity(scheduler, this, nextPos);
+            }
+            return false;
+        }
     }
 
     private Point nextPositionFairy(WorldModel world, Point destPos) {
@@ -102,36 +134,8 @@ public final class Entity {
         return newPos;
     }
 
-    private boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
-        if (this.position.adjacent(target.position)) {
-            return true;
-        } else {
-            Point nextPos = this.nextPositionDude(world, target.position);
-
-            if (!this.position.equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
-        }
-    }
-
-    private boolean moveToNotFull(WorldModel world, Entity target, EventScheduler scheduler) {
-        if (this.position.adjacent(target.position)) {
-            this.resourceCount = this.resourceCount + 1;
-            target.health = target.health - 1;
-            return true;
-        } else {
-            Point nextPos = this.nextPositionDude(world, target.position);
-
-            if (!this.position.equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
-        }
-    }
-
     private boolean moveToFairy(WorldModel world, Entity target, EventScheduler scheduler) {
-        if (this.position.adjacent(target.position)) {
+        if (adjacent(this.position, target.position)) {
             world.removeEntity(scheduler, target);
             return true;
         } else {

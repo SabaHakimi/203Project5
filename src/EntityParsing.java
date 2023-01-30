@@ -30,6 +30,18 @@ public class EntityParsing {
     private static final int OBSTACLE_ANIMATION_PERIOD = 0;
     private static final int OBSTACLE_NUM_PROPERTIES = 1;
 
+    public static String getSaplingKey() {
+        return SAPLING_KEY;
+    }
+
+    public static String getTreeKey() {
+        return TREE_KEY;
+    }
+
+    public static String getStumpKey() {
+        return STUMP_KEY;
+    }
+
     private static void parseSapling(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == SAPLING_NUM_PROPERTIES) {
             int health = Integer.parseInt(properties[SAPLING_HEALTH]);
@@ -119,15 +131,4 @@ public class EntityParsing {
         }
     }
 
-    public static String getSaplingKey() {
-        return SAPLING_KEY;
-    }
-
-    public static String getTreeKey() {
-        return TREE_KEY;
-    }
-
-    public static String getStumpKey() {
-        return STUMP_KEY;
-    }
 }
