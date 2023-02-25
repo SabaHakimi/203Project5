@@ -7,12 +7,12 @@ public class Factory {
     private static final double SAPLING_ACTION_ANIMATION_PERIOD = 1.000; // have to be in sync since grows and gains health at same time
     private static final int SAPLING_HEALTH_LIMIT = 5;
 
-    public static Action createAnimationAction(Entity entity, int repeatCount) {
-        return new Action(ActionKind.ANIMATION, entity, null, null, repeatCount);
+    public static Animation createAnimationAction(Entity entity, int repeatCount) {
+        return new Animation(entity, repeatCount);
     }
 
-    public static Action createActivityAction(Entity entity, WorldModel world, ImageStore imageStore) {
-        return new Action(ActionKind.ACTIVITY, entity, world, imageStore, 0);
+    public static Activity createActivityAction(Entity entity, WorldModel world, ImageStore imageStore) {
+        return new Activity(entity, world, imageStore);
     }
 
     public static Entity createHouse(String id, Point position, List<PImage> images) {
