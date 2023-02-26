@@ -44,8 +44,7 @@ public class EntityParsing {
 
     private static void parseSapling(WorldModel world, String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == SAPLING_NUM_PROPERTIES) {
-            int health = Integer.parseInt(properties[SAPLING_HEALTH]);
-            Entity entity = Factory.createSapling(id, pt, imageStore.getImageList(SAPLING_KEY), health);
+            Entity entity = Factory.createSapling(id, pt, imageStore.getImageList(SAPLING_KEY));
             world.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", SAPLING_KEY, SAPLING_NUM_PROPERTIES));

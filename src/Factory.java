@@ -7,11 +7,11 @@ public class Factory {
     private static final double SAPLING_ACTION_ANIMATION_PERIOD = 1.000; // have to be in sync since grows and gains health at same time
     private static final int SAPLING_HEALTH_LIMIT = 5;
 
-    public static Animation createAnimationAction(Entity entity, int repeatCount) {
+    public static Action createAnimationAction(Entity entity, int repeatCount) {
         return new Animation(entity, repeatCount);
     }
 
-    public static Activity createActivityAction(Entity entity, WorldModel world, ImageStore imageStore) {
+    public static Action createActivityAction(Entity entity, WorldModel world, ImageStore imageStore) {
         return new Activity(entity, world, imageStore);
     }
 
@@ -32,7 +32,7 @@ public class Factory {
     }
 
     // health starts at 0 and builds up until ready to convert to Tree
-    public static Entity createSapling(String id, Point position, List<PImage> images, int health) {
+    public static Entity createSapling(String id, Point position, List<PImage> images) {
         return new Entity(EntityKind.SAPLING, id, position, images, 0, 0, SAPLING_ACTION_ANIMATION_PERIOD, SAPLING_ACTION_ANIMATION_PERIOD, 0, SAPLING_HEALTH_LIMIT);
     }
 
