@@ -40,7 +40,7 @@ public class Fairy extends Active implements Moving {
             world.removeEntity(scheduler, target);
             return true;
         } else {
-            Moving.super.moveTo(world, target, scheduler);
+            return Moving.super.moveTo(world, target, scheduler);
         }
     }
 

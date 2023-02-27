@@ -66,7 +66,7 @@ public final class VirtualWorld extends PApplet {
 
     // Just for debugging and for P5
     // Be sure to refactor this method as appropriate
-    public void mousePressed() {
+   /* public void mousePressed() {
         Point pressed = mouseToPoint();
         System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
 
@@ -76,7 +76,7 @@ public final class VirtualWorld extends PApplet {
             System.out.println(entity.getId() + ": " + entity.getClass() + " : " + entity.getHealth());
         }
 
-    }
+    }*/
 
     private void scheduleActions(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         for (Entity entity : world.getEntities()) {
