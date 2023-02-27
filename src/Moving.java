@@ -1,41 +1,33 @@
 public interface Moving {
 
+    Point getPosition();
+
+    boolean uniqueIf(WorldModel world, Point newPos, int horizOrVert);
+
     default Point nextPosition(WorldModel world, Point destPos) {
+        int horiz = Integer.signum(destPos.x - this.getPosition().x);
+        Point newPos = new Point(this.getPosition().x + horiz, this.getPosition().y);
 
-    }
+        if (uniqueIf(world, newPos, horiz)) {
+            int vert = Integer.signum(destPos.y - this.getPosition().y);
+            newPos = new Point(this.getPosition().x, this.getPosition().y + vert);
 
-    private Point nextPositionFairy(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.x - this.position.x);
-        Point newPos = new Point(this.position.x + horiz, this.position.y);
-
-        if (horiz == 0 || world.isOccupied(newPos)) {
-            int vert = Integer.signum(destPos.y - this.position.y);
-            newPos = new Point(this.position.x, this.position.y + vert);
-
-            if (vert == 0 || world.isOccupied(newPos)) {
-                newPos = this.position;
+            if (uniqueIf(world, newPos, vert)) {
+                newPos = this.getPosition();
             }
         }
 
         return newPos;
     }
 
-    private Point nextPositionDude(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.x - this.position.x);
-        Point newPos = new Point(this.position.x + horiz, this.position.y);
+    default boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {
+        Point nextPos = this.nextPosition(world, target.getPosition());
 
-        if (horiz == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).kind != EntityKind.STUMP) {
-            int vert = Integer.signum(destPos.y - this.position.y);
-            newPos = new Point(this.position.x, this.position.y + vert);
-
-            if (vert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).kind != EntityKind.STUMP) {
-                newPos = this.position;
-            }
+        if (!this.getPosition().equals(nextPos)) {
+            world.moveEntity(scheduler, (Entity) this, nextPos);
         }
+        return false;
 
-        return newPos;
     }
-
-
 
 }

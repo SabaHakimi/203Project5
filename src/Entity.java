@@ -32,6 +32,8 @@ public abstract class Entity {
         position = p;
     }
 
+    public List<PImage> getImages() { return this.images; }
+
     public PImage getCurrentImage() {
         return this.images.get(this.imageIndex % this.images.size());
     }

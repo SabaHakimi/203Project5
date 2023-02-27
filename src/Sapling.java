@@ -6,17 +6,7 @@ import java.util.*;
  * An entity that exists in the world. See EntityKind for the
  * different kinds of entities that exist.
  */
-public final class Sapling {
-
-    private final EntityKind kind;
-    private final String id;
-    private Point position;
-    private final List<PImage> images;
-    private int imageIndex;
-    private final int resourceLimit;
-    private int resourceCount;
-    private final double actionPeriod;
-    private final double animationPeriod;
+public class Sapling extends Transforms {
     private int health;
     private final int healthLimit;
     private static final double TREE_ANIMATION_MAX = 0.600;
@@ -26,39 +16,13 @@ public final class Sapling {
     private static final int TREE_HEALTH_MAX = 3;
     private static final int TREE_HEALTH_MIN = 1;
 
-    public Sapling(EntityKind kind, String id, Point position, List<PImage> images, int resourceLimit, int resourceCount, double actionPeriod, double animationPeriod, int health, int healthLimit) {
-        this.kind = kind;
-        this.id = id;
-        this.position = position;
-        this.images = images;
-        this.imageIndex = 0;
-        this.resourceLimit = resourceLimit;
-        this.resourceCount = resourceCount;
-        this.actionPeriod = actionPeriod;
-        this.animationPeriod = animationPeriod;
+    public Sapling(String id, Point position, List<PImage> images, double animationPeriod, double actionPeriod, int health, int healthLimit) {
+        super(id, position, images, animationPeriod, actionPeriod);
         this.health = health;
         this.healthLimit = healthLimit;
     }
 
-    public EntityKind getKind() {
-        return kind;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Point getPosition() {
-        return position;
-    }
-
-    public void setPosition(Point p) {
-        position = p;
-    }
-
-    public int getHealth() {
-        return health;
-    }
+    public void decrementHealth() { health -= 1; }
 
     private static int getIntFromRange(int max, int min) {
         Random rand = new Random();
@@ -70,87 +34,16 @@ public final class Sapling {
         return min + rand.nextDouble() * (max - min);
     }
 
-    private static boolean adjacent(Point p1, Point p2) {
-        return (p1.x == p2.x && Math.abs(p1.y - p2.y) == 1) || (p1.y == p2.y && Math.abs(p1.x - p2.x) == 1);
-    }
-
-    private Point nextPositionDude(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.x - this.position.x);
-        Point newPos = new Point(this.position.x + horiz, this.position.y);
-
-        if (horiz == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).kind != EntityKind.STUMP) {
-            int vert = Integer.signum(destPos.y - this.position.y);
-            newPos = new Point(this.position.x, this.position.y + vert);
-
-            if (vert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).kind != EntityKind.STUMP) {
-                newPos = this.position;
-            }
-        }
-
-        return newPos;
-    }
-
-    private boolean moveToFull(WorldModel world, Sapling target, EventScheduler scheduler) {
-        if (adjacent(this.position, target.position)) {
-            return true;
-        } else {
-            Point nextPos = this.nextPositionDude(world, target.position);
-
-            if (!this.position.equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
+    public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
+        this.health = this.health + 1;
+        if (!this.transform(world, scheduler, imageStore)) {
+            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.getActionPeriod());
         }
     }
 
-    private boolean moveToNotFull(WorldModel world, Sapling target, EventScheduler scheduler) {
-        if (adjacent(this.position, target.position)) {
-            this.resourceCount = this.resourceCount + 1;
-            target.health = target.health - 1;
-            return true;
-        } else {
-            Point nextPos = this.nextPositionDude(world, target.position);
-
-            if (!this.position.equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
-        }
-    }
-
-    private Point nextPositionFairy(WorldModel world, Point destPos) {
-        int horiz = Integer.signum(destPos.x - this.position.x);
-        Point newPos = new Point(this.position.x + horiz, this.position.y);
-
-        if (horiz == 0 || world.isOccupied(newPos)) {
-            int vert = Integer.signum(destPos.y - this.position.y);
-            newPos = new Point(this.position.x, this.position.y + vert);
-
-            if (vert == 0 || world.isOccupied(newPos)) {
-                newPos = this.position;
-            }
-        }
-
-        return newPos;
-    }
-
-    private boolean moveToFairy(WorldModel world, Sapling target, EventScheduler scheduler) {
-        if (adjacent(this.position, target.position)) {
-            world.removeEntity(scheduler, target);
-            return true;
-        } else {
-            Point nextPos = this.nextPositionFairy(world, target.position);
-
-            if (!this.position.equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
-        }
-    }
-
-    private boolean transformSapling(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    public boolean transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.health <= 0) {
-            Sapling stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(EntityParsing.getStumpKey()));
+            Entity stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.getId(), this.getPosition(), imageStore.getImageList(EntityParsing.getStumpKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -158,7 +51,7 @@ public final class Sapling {
 
             return true;
         } else if (this.health >= this.healthLimit) {
-            Sapling tree = Factory.createTree(EntityParsing.getTreeKey() + "_" + this.id, this.position, getNumFromRange(TREE_ACTION_MAX, TREE_ACTION_MIN), getNumFromRange(TREE_ANIMATION_MAX, TREE_ANIMATION_MIN), getIntFromRange(TREE_HEALTH_MAX, TREE_HEALTH_MIN), imageStore.getImageList(EntityParsing.getTreeKey()));
+            Animated tree = Factory.createTree(EntityParsing.getTreeKey() + "_" + this.getId(), this.getPosition(), getNumFromRange(TREE_ACTION_MAX, TREE_ACTION_MIN), getNumFromRange(TREE_ANIMATION_MAX, TREE_ANIMATION_MIN), getIntFromRange(TREE_HEALTH_MAX, TREE_HEALTH_MIN), imageStore.getImageList(EntityParsing.getTreeKey()));
 
             world.removeEntity(scheduler, this);
 
@@ -169,132 +62,6 @@ public final class Sapling {
         }
 
         return false;
-    }
-
-    private boolean transformTree(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        if (this.health <= 0) {
-            Sapling stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.id, this.position, imageStore.getImageList(EntityParsing.getStumpKey()));
-
-            world.removeEntity(scheduler, this);
-
-            world.addEntity(stump);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean transformPlant(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        if (this.kind == EntityKind.TREE) {
-            return this.transformTree(world, scheduler, imageStore);
-        } else if (this.kind == EntityKind.SAPLING) {
-            return this.transformSapling(world, scheduler, imageStore);
-        } else {
-            throw new UnsupportedOperationException(String.format("transformPlant not supported for %s", this));
-        }
-    }
-
-    private void transformFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        Sapling dude = Factory.createDudeNotFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
-
-        world.removeEntity(scheduler, this);
-
-        world.addEntity(dude);
-        dude.scheduleActions(scheduler, world, imageStore);
-    }
-
-    private boolean transformNotFull(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        if (this.resourceCount >= this.resourceLimit) {
-            Sapling dude = Factory.createDudeFull(this.id, this.position, this.actionPeriod, this.getAnimationPeriod(), this.resourceLimit, this.images);
-
-            world.removeEntity(scheduler, this);
-            scheduler.unscheduleAllEvents(this);
-
-            world.addEntity(dude);
-            dude.scheduleActions(scheduler, world, imageStore);
-
-            return true;
-        }
-
-        return false;
-    }
-
-
-
-    public void executeDudeFullActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        Optional<Sapling> fullTarget = world.findNearest(this.position, new ArrayList<>(List.of(EntityKind.HOUSE)));
-
-        if (fullTarget.isPresent() && this.moveToFull(world, fullTarget.get(), scheduler)) {
-            this.transformFull(world, scheduler, imageStore);
-        } else {
-            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
-        }
-    }
-
-    public void executeDudeNotFullActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        Optional<Sapling> target = world.findNearest(this.position, new ArrayList<>(Arrays.asList(EntityKind.TREE, EntityKind.SAPLING)));
-
-        if (target.isEmpty() || !this.moveToNotFull(world, target.get(), scheduler) || !this.transformNotFull(world, scheduler, imageStore)) {
-            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
-        }
-    }
-
-    public void executeFairyActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        Optional<Sapling> fairyTarget = world.findNearest(this.position, new ArrayList<>(List.of(EntityKind.STUMP)));
-
-        if (fairyTarget.isPresent()) {
-            Point tgtPos = fairyTarget.get().position;
-
-            if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
-
-                Sapling sapling = Factory.createSapling(EntityParsing.getSaplingKey() + "_" + fairyTarget.get().id, tgtPos, imageStore.getImageList(EntityParsing.getSaplingKey()));
-
-                world.addEntity(sapling);
-                sapling.scheduleActions(scheduler, world, imageStore);
-            }
-        }
-
-        scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
-    }
-
-    public void executeTreeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-
-        if (!this.transformPlant(world, scheduler, imageStore)) {
-
-            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
-        }
-    }
-
-    public void executeSaplingActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        this.health = this.health + 1;
-        if (!this.transformPlant(world, scheduler, imageStore)) {
-            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.actionPeriod);
-        }
-    }
-
-    public double getAnimationPeriod() {
-        return switch (this.kind) {
-            case DUDE_FULL, DUDE_NOT_FULL, OBSTACLE, FAIRY, SAPLING, TREE -> this.animationPeriod;
-            default ->
-                    throw new UnsupportedOperationException(String.format("getAnimationPeriod not supported for %s", this.kind));
-        };
-    }
-
-    public PImage getCurrentImage() {
-        return this.images.get(this.imageIndex % this.images.size());
-    }
-
-    public void nextImage() {
-        this.imageIndex = this.imageIndex + 1;
-    }
-
-    /**
-     * Helper method for testing. Preserve this functionality while refactoring.
-     */
-    public String log(){
-        return this.id.isEmpty() ? null :
-                String.format("%s %d %d %d", this.id, this.position.x, this.position.y, this.imageIndex);
     }
 
 }
