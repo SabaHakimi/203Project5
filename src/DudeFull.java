@@ -6,7 +6,7 @@ import java.util.*;
  * An entity that exists in the world. See EntityKind for the
  * different kinds of entities that exist.
  */
-public class DudeFull extends Transforms implements Moving {
+public class DudeFull extends Active implements Moving {
 
     private final int resourceLimit;
 

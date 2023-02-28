@@ -6,7 +6,8 @@ import java.util.*;
  * An entity that exists in the world. See EntityKind for the
  * different kinds of entities that exist.
  */
-public class Sapling extends Transforms {
+public class Sapling extends Plant {
+
     private int health;
     private final int healthLimit;
     private static final double TREE_ANIMATION_MAX = 0.600;
@@ -22,7 +23,9 @@ public class Sapling extends Transforms {
         this.healthLimit = healthLimit;
     }
 
-    public void decrementHealth() { health -= 1; }
+    public int getHealth() { return this.health; }
+
+    public void decrementHealth() { this.health -= 1; }
 
     private static int getIntFromRange(int max, int min) {
         Random rand = new Random();
@@ -36,19 +39,11 @@ public class Sapling extends Transforms {
 
     public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         this.health = this.health + 1;
-        if (!this.transform(world, scheduler, imageStore)) {
-            scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.getActionPeriod());
-        }
+        super.executeActivity(world, imageStore, scheduler);
     }
 
     public boolean transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        if (this.health <= 0) {
-            Entity stump = Factory.createStump(EntityParsing.getStumpKey() + "_" + this.getId(), this.getPosition(), imageStore.getImageList(EntityParsing.getStumpKey()));
-
-            world.removeEntity(scheduler, this);
-
-            world.addEntity(stump);
-
+        if (super.transform(world, scheduler, imageStore)) {
             return true;
         } else if (this.health >= this.healthLimit) {
             Animated tree = Factory.createTree(EntityParsing.getTreeKey() + "_" + this.getId(), this.getPosition(), getNumFromRange(TREE_ACTION_MAX, TREE_ACTION_MIN), getNumFromRange(TREE_ANIMATION_MAX, TREE_ANIMATION_MIN), getIntFromRange(TREE_HEALTH_MAX, TREE_HEALTH_MIN), imageStore.getImageList(EntityParsing.getTreeKey()));

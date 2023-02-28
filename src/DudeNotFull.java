@@ -6,7 +6,7 @@ import java.util.*;
  * An entity that exists in the world. See EntityKind for the
  * different kinds of entities that exist.
  */
-public class DudeNotFull extends Transforms implements Moving {
+public class DudeNotFull extends Active implements Moving {
 
     private final int resourceLimit;
     private int resourceCount;
@@ -49,11 +49,8 @@ public class DudeNotFull extends Transforms implements Moving {
 
         if (Point.adjacent(this.getPosition(), target.getPosition())) {
             this.resourceCount = this.resourceCount + 1;
-            if (target instanceof Tree t) {
-                t.decrementHealth();
-            } else if (target instanceof Sapling s) {
-                s.decrementHealth();
-
+            if (target instanceof Plant p) {
+                p.decrementHealth();
             }
 
             return true;

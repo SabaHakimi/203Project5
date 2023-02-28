@@ -24,7 +24,7 @@ public class Fairy extends Active implements Moving {
 
                 world.addEntity(sapling);
 
-                scheduleActions(scheduler, world, imageStore);
+                sapling.scheduleActions(scheduler, world, imageStore);
             }
         }
 
