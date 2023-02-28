@@ -8,9 +8,9 @@ public abstract class Plant extends Active {
         super(id, position, images, animationPeriod, actionPeriod);
     }
 
-    abstract void decrementHealth();
-
     abstract int getHealth();
+
+    abstract void decrementHealth();
 
     public boolean transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         if (this.getHealth() <= 0) {

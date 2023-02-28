@@ -25,14 +25,13 @@ public class DudeFull extends Active implements Moving {
         }
     }
 
-    public boolean transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
+    public void transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
         Animated dude = Factory.createDudeNotFull(this.getId(), this.getPosition(), this.getActionPeriod(), this.getAnimationPeriod(), this.resourceLimit, this.getImages());
 
         world.removeEntity(scheduler, this);
 
         world.addEntity(dude);
         dude.scheduleActions(scheduler, world, imageStore);
-        return false;
     }
 
     public boolean uniqueIf(WorldModel world, Point newPos, int horizOrVert) {
@@ -43,12 +42,7 @@ public class DudeFull extends Active implements Moving {
         if (Point.adjacent(this.getPosition(), target.getPosition())) {
             return true;
         } else {
-            Point nextPos = this.nextPosition(world, target.getPosition());
-
-            if (!this.getPosition().equals(nextPos)) {
-                world.moveEntity(scheduler, this, nextPos);
-            }
-            return false;
+            return Moving.super.moveTo(world, target, scheduler);
         }
     }
 
