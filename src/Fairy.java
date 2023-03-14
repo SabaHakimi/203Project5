@@ -31,10 +31,6 @@ public class Fairy extends Active implements Moving {
         scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.getActionPeriod());
     }
 
-    public boolean uniqueIf(WorldModel world, Point newPos, int horizOrVert) {
-        return (horizOrVert == 0 || world.isOccupied(newPos));
-    }
-
     public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {
         if (Point.adjacent(this.getPosition(), target.getPosition())) {
             world.removeEntity(scheduler, target);
@@ -44,4 +40,8 @@ public class Fairy extends Active implements Moving {
         }
     }
 
+    @Override
+    public boolean uniqueIf(WorldModel world, Point newPos) {
+        return Moving.super.uniqueIf(world, newPos) && !world.isOccupied(newPos);
+    }
 }

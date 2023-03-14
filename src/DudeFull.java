@@ -34,8 +34,9 @@ public class DudeFull extends Active implements Moving {
         dude.scheduleActions(scheduler, world, imageStore);
     }
 
-    public boolean uniqueIf(WorldModel world, Point newPos, int horizOrVert) {
-        return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
+    public boolean uniqueIf(WorldModel world, Point newPos/*, int horizOrVert*/) {
+        // Old: return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
+        return (Moving.super.uniqueIf(world, newPos) && !(world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class));
     }
 
     private boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {

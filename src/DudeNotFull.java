@@ -41,9 +41,11 @@ public class DudeNotFull extends Active implements Moving {
         return false;
     }
 
-    public boolean uniqueIf(WorldModel world, Point newPos, int horizOrVert) {
-        return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
+    public boolean uniqueIf(WorldModel world, Point newPos/*, int horizOrVert*/) {
+        // Old: return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
+        return (Moving.super.uniqueIf(world, newPos) && !(world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class));
     }
+
 
     public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {
 
