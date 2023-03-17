@@ -18,7 +18,7 @@ public class DudeFull extends Active implements Moving {
     public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
         Optional<Entity> fullTarget = world.findNearest(this.getPosition(), new ArrayList<>(List.of(House.class)));
 
-        if (fullTarget.isPresent() && this.moveToFull(world, fullTarget.get(), scheduler)) {
+        if (fullTarget.isPresent() && this.moveTo(world, fullTarget.get(), scheduler)) {
             this.transform(world, scheduler, imageStore);
         } else {
             scheduler.scheduleEvent(this, Factory.createActivityAction(this, world, imageStore), this.getActionPeriod());
@@ -35,11 +35,10 @@ public class DudeFull extends Active implements Moving {
     }
 
     public boolean uniqueIf(WorldModel world, Point newPos/*, int horizOrVert*/) {
-        // Old: return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
         return (Moving.super.uniqueIf(world, newPos) && !(world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class));
     }
 
-    private boolean moveToFull(WorldModel world, Entity target, EventScheduler scheduler) {
+    public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {
         if (Point.adjacent(this.getPosition(), target.getPosition())) {
             return true;
         } else {

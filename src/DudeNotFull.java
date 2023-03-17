@@ -42,7 +42,6 @@ public class DudeNotFull extends Active implements Moving {
     }
 
     public boolean uniqueIf(WorldModel world, Point newPos/*, int horizOrVert*/) {
-        // Old: return (horizOrVert == 0 || world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class);
         return (Moving.super.uniqueIf(world, newPos) && !(world.isOccupied(newPos) && world.getOccupancyCell(newPos).getClass() != Stump.class));
     }
 

@@ -49,4 +49,8 @@ public class Factory {
     public static Animated createDudeFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
         return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
+
+    public static Animated createDonkey(String id, Point position, List<PImage> images, double animationPeriod) {
+        return new Donkey(id, position, images, animationPeriod);
+    }
 }
