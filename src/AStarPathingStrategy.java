@@ -65,25 +65,7 @@ class AStarPathingStrategy implements PathingStrategy {
         //System.out.println(path);
         return path;
     }
-
-
-
     private static double calcDistance(Point p1, Point p2) {
         return Math.sqrt(Math.pow(p2.x - p2.y, 2) + Math.pow(p2.y - p1.y, 2));
     }
-
-    /*
-    private static List<Point> getNeighbors(Node cur) {
-        List<Point> neighbors = new ArrayList<>(4);
-        neighbors.add(new Point(cur.getLocation().x + 1, cur.getLocation().y));
-        neighbors.add(new Point(cur.getLocation().x - 1, cur.getLocation().y));
-        neighbors.add(new Point(cur.getLocation().x, cur.getLocation().y + 1));
-        neighbors.add(new Point(cur.getLocation().x, cur.getLocation().y - 1));
-        return neighbors;
-    }
-
-    private static int manhattanDistance(Point p1, Point p2) {
-        return (Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y));
-    }
-    */
 }

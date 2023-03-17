@@ -14,5 +14,6 @@ The nature of this project is that you are necessarily introducing
 that you will make a mistake and want to go back to before you made
 certain changes. Git will help you do that, but only if you've 
 frequently committed versions of the project.
+_Additions_
 
 <div style="color: darkgreen;">All the best!</div>
