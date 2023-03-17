@@ -6,6 +6,10 @@ public class Factory {
 
     private static final double SAPLING_ACTION_ANIMATION_PERIOD = 1.000; // have to be in sync since grows and gains health at same time
     private static final int SAPLING_HEALTH_LIMIT = 5;
+    private static final String SHREK_KEY = "shrek";
+    private static final double SHREK_ANIMATION_PERIOD = 1.00;
+    private static final String DONKEY_KEY = "donkey";
+    private static final double DONKEY_ANIMATION_PERIOD = 1.00;
 
     public static Action createAnimationAction(Animated entity, int repeatCount) {
         return new Animation(entity, repeatCount);
@@ -50,7 +54,11 @@ public class Factory {
         return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
 
-    public static Animated createDonkey(String id, Point position, List<PImage> images, double animationPeriod) {
-        return new Donkey(id, position, images, animationPeriod);
+    //create shrek bruh
+
+    public static Animated createDonkey(Point position, List<PImage> images) {
+        return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD);
     }
+
+
 }

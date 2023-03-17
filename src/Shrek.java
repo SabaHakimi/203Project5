@@ -19,6 +19,7 @@ public class Shrek extends Fairy {
 
                 // create donkey instead
                 Animated sapling = Factory.createSapling(EntityParsing.getSaplingKey() + "_" + shrekTarget.get().getId(), tgtPos, imageStore.getImageList(EntityParsing.getSaplingKey()));
+                Animated donkey = Factory.createDonkey(tgtPos, imageStore.getImageList("donkey"));
 
                 world.addEntity(sapling);
 
