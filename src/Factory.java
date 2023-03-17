@@ -7,7 +7,7 @@ public class Factory {
     private static final double SAPLING_ACTION_ANIMATION_PERIOD = 1.000; // have to be in sync since grows and gains health at same time
     private static final int SAPLING_HEALTH_LIMIT = 5;
     private static final String SHREK_KEY = "shrek";
-    private static final double SHREK_ANIMATION_PERIOD = 1.00;
+    private static final double SHREK_ANIMATION_PERIOD = 0.250;
     private static final double SHREK_ACTION_PERIOD = 1.00;
     private static final String DONKEY_KEY = "donkey";
     private static final double DONKEY_ANIMATION_PERIOD = 1.00;

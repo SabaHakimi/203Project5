@@ -77,6 +77,7 @@ public final class VirtualWorld extends PApplet {
         }*/
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
        world.tryAddEntity(shrek);
+       shrek.scheduleActions(scheduler, world, imageStore);
     }
 
     private void scheduleActions(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
