@@ -17,13 +17,11 @@ public class Shrek extends Fairy {
 
             if (this.moveTo(world, shrekTarget.get(), scheduler)) {
 
-                // create donkey instead
-                Animated sapling = Factory.createSapling(EntityParsing.getSaplingKey() + "_" + shrekTarget.get().getId(), tgtPos, imageStore.getImageList(EntityParsing.getSaplingKey()));
                 Animated donkey = Factory.createDonkey(tgtPos, imageStore.getImageList("donkey"));
 
-                world.addEntity(sapling);
+                world.addEntity(donkey);
 
-                sapling.scheduleActions(scheduler, world, imageStore);
+                donkey.scheduleActions(scheduler, world, imageStore);
             }
         }
 

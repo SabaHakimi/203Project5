@@ -8,6 +8,7 @@ public class Factory {
     private static final int SAPLING_HEALTH_LIMIT = 5;
     private static final String SHREK_KEY = "shrek";
     private static final double SHREK_ANIMATION_PERIOD = 1.00;
+    private static final double SHREK_ACTION_PERIOD = 1.00;
     private static final String DONKEY_KEY = "donkey";
     private static final double DONKEY_ANIMATION_PERIOD = 1.00;
 
@@ -55,6 +56,9 @@ public class Factory {
     }
 
     //create shrek bruh
+    public static Animated createShrek(String id, Point position, List<PImage> images) {
+        return new Shrek(SHREK_KEY, position, images, SHREK_ANIMATION_PERIOD, SHREK_ACTION_PERIOD);
+    }
 
     public static Animated createDonkey(Point position, List<PImage> images) {
         return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD);

@@ -70,12 +70,13 @@ public final class VirtualWorld extends PApplet {
         Point pressed = mouseToPoint();
         System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
 
-        Optional<Entity> entityOptional = world.getOccupant(pressed);
+        /*Optional<Entity> entityOptional = world.getOccupant(pressed);
         if (entityOptional.isPresent()) {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getClass());
-        }
-
+        }*/
+       Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
+       world.tryAddEntity(shrek);
     }
 
     private void scheduleActions(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
