@@ -7,6 +7,7 @@ obstacle images/water0.png
 grass images/grass.png
 flowers images/flowers.png
 background_default images/none.bmp
+swampBG images/swampBG.png
 dirt images/dirt.bmp
 dirt_horiz images/dirt_horiz.png
 dirt_vert_left images/dirt_vert_right.png

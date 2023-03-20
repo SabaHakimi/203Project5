@@ -75,6 +75,7 @@ public final class VirtualWorld extends PApplet {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getClass());
         }*/
+       world.setBackgroundCell(pressed, createSwampBackground(imageStore));
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
        world.tryAddEntity(shrek);
        shrek.scheduleActions(scheduler, world, imageStore);
@@ -110,6 +111,10 @@ public final class VirtualWorld extends PApplet {
 
     private static Background createDefaultBackground(ImageStore imageStore) {
         return new Background(DEFAULT_IMAGE_NAME, imageStore.getImageList(DEFAULT_IMAGE_NAME));
+    }
+
+    private static Background createSwampBackground(ImageStore imageStore) {
+        return new Background("swampBG", imageStore.getImageList("swampBG"));
     }
 
     private static PImage createImageColored(int width, int height, int color) {

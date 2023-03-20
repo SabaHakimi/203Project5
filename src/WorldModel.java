@@ -93,6 +93,8 @@ public final class WorldModel {
         return this.background[pos.y][pos.x];
     }
 
+    public void setBackgroundCell(Point pos, Background swampBG) { this.background[pos.y][pos.x] = swampBG; }
+
     // Assumes that there is no entity currently occupying the intended destination cell.
     public void addEntity(Entity entity) {
         if (withinBounds(entity.getPosition())) {
