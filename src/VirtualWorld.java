@@ -1,6 +1,10 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import processing.core.*;
 
@@ -75,10 +79,36 @@ public final class VirtualWorld extends PApplet {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getClass());
         }*/
-       world.setBackgroundCell(pressed, createSwampBackground(imageStore));
+       backgroundSwapBFS(pressed, (p) -> world.withinBounds(p) && !world.isOccupied(p), PathingStrategy.CARDINAL_NEIGHBORS);
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
        world.tryAddEntity(shrek);
        shrek.scheduleActions(scheduler, world, imageStore);
+    }
+
+    public void backgroundSwapBFS(Point start, Predicate<Point> canPassThrough, Function<Point, Stream<Point>> potentialNeighbors) {
+        // Initializing Vars
+        int range = 0;
+        Queue<Point> openList = new LinkedList<>();
+        HashSet<Point> closedList = new HashSet<>();
+        openList.add(start);
+        Point cur = start;
+
+        while (openList.size() > 0 && range < (int)(Math.random() * 9 + 7)) {
+            // Add neighbors
+            List<Point> neighbors = potentialNeighbors.apply(cur).filter(canPassThrough).filter((p) -> (!closedList.contains(p))).toList();
+            openList.addAll(neighbors);
+
+            // Process
+            world.setBackgroundCell(cur, createSwampBackground(imageStore));
+
+            // Add current node to closed list
+            openList.remove(cur);
+            closedList.add(cur);
+            cur = openList.poll();
+
+            range += 1;
+            System.out.println(range);
+        }
     }
 
     private void scheduleActions(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
