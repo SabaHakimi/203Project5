@@ -103,7 +103,7 @@ public final class WorldModel {
         }
     }
 
-    public void tryAddHut(Entity entity, Entity shrek) {
+    public void tryAddHut(Entity entity, Animated shrek) {
         if (isOccupied(entity.getPosition())) //if spot is occupied, return.
             return;
         Point p = new Point(entity.getPosition().x, entity.getPosition().y+1);
