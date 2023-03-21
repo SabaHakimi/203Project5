@@ -75,9 +75,10 @@ public final class VirtualWorld extends PApplet {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getClass());
         }*/
-       world.setBackgroundCell(pressed, createSwampBackground(imageStore));
+//       world.setBackgroundCell(pressed, createSwampBackground(imageStore));
+       Entity hut = Factory.createHut(pressed, imageStore.getImageList("hut"));
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
-       world.tryAddEntity(shrek);
+       world.tryAddHut(hut, shrek);
        shrek.scheduleActions(scheduler, world, imageStore);
     }
 

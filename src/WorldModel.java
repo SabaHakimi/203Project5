@@ -103,14 +103,19 @@ public final class WorldModel {
         }
     }
 
-    public void tryAddEntity(Entity entity) {
-        if (isOccupied(entity.getPosition())) {
-            // arguably the wrong type of exception, but we are not
-            // defining our own exceptions yet
-            throw new IllegalArgumentException("position occupied");
+    public void tryAddHut(Entity entity, Entity shrek) {
+        if (isOccupied(entity.getPosition())) //if spot is occupied, return.
+            return;
+        Point p = new Point(entity.getPosition().x, entity.getPosition().y+1);
+        if (entity.getClass() == Hut.class && !isOccupied(p)) {
+            shrek.setPosition(p);
+            addEntity(shrek);
+            addEntity(entity);
         }
-
-        addEntity(entity);
+    }
+    public void tryAddEntity(Entity entity) {
+        if (!isOccupied(entity.getPosition())) //if spot is occupied, return.
+            addEntity(entity);
     }
 
     private void removeEntityAt(Point pos) {

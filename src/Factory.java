@@ -11,6 +11,10 @@ public class Factory {
     private static final double SHREK_ACTION_PERIOD = 1.00;
     private static final String DONKEY_KEY = "donkey";
     private static final double DONKEY_ANIMATION_PERIOD = 1.00;
+    private static final String CAPYBARA_KEY = "capybara";
+    private static final double CAPYBARA_ANIMATION_PERIOD = 0.20;
+    private static final String HUT_KEY = "hut";
+
 
     public static Action createAnimationAction(Animated entity, int repeatCount) {
         return new Animation(entity, repeatCount);
@@ -23,6 +27,7 @@ public class Factory {
     public static Entity createHouse(String id, Point position, List<PImage> images) {
         return new House(id, position, images);
     }
+
 
     public static Entity createObstacle(String id, Point position, double animationPeriod, List<PImage> images) {
         return new Obstacle(id, position, images, animationPeriod);
@@ -63,6 +68,7 @@ public class Factory {
     public static Animated createDonkey(Point position, List<PImage> images) {
         return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD);
     }
-
-
+    public static Entity createHut( Point position, List<PImage> images) {
+        return new Hut(HUT_KEY, position, images);
+    }
 }
