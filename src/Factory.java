@@ -10,7 +10,7 @@ public class Factory {
     private static final double SHREK_ANIMATION_PERIOD = 0.250;
     private static final double SHREK_ACTION_PERIOD = 1.00;
     private static final String DONKEY_KEY = "donkey";
-    private static final double DONKEY_ANIMATION_PERIOD = 1.00;
+    private static final double DONKEY_ANIMATION_PERIOD = 0.25;
     private static final String CAPYBARA_KEY = "capybara";
     private static final double CAPYBARA_ANIMATION_PERIOD = 0.20;
     private static final String HUT_KEY = "hut";
