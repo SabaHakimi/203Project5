@@ -79,11 +79,13 @@ public final class VirtualWorld extends PApplet {
             Entity entity = entityOptional.get();
             System.out.println(entity.getId() + ": " + entity.getClass());
         }*/
-       backgroundSwapBFS(pressed, (p) -> world.withinBounds(p) && !world.isOccupied(p), PathingStrategy.CARDINAL_NEIGHBORS);
        Entity hut = Factory.createHut(pressed, imageStore.getImageList("hut"));
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
-       world.tryAddHut(hut, shrek);
-       shrek.scheduleActions(scheduler, world, imageStore);
+       if (world.tryAddEvent(hut, shrek)) {
+           backgroundSwapBFS(pressed, (p) -> world.withinBounds(p) && !world.isOccupied(p), PathingStrategy.CARDINAL_NEIGHBORS);
+           shrek.scheduleActions(scheduler, world, imageStore);
+       }
+
     }
 
     public void backgroundSwapBFS(Point start, Predicate<Point> canPassThrough, Function<Point, Stream<Point>> potentialNeighbors) {
