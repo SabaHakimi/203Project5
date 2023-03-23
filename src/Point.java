@@ -14,6 +14,10 @@ public final class Point {
         return (p1.x == p2.x && Math.abs(p1.y - p2.y) == 1) || (p1.y == p2.y && Math.abs(p1.x - p2.x) == 1);
     }
 
+    public static boolean nearby(Point p1, Point p2) {
+        return ((Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y)) < 3);
+    }
+
     public String toString() {
         return "(" + x + "," + y + ")";
     }

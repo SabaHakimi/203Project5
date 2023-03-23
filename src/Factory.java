@@ -10,7 +10,9 @@ public class Factory {
     private static final double SHREK_ANIMATION_PERIOD = 0.250;
     private static final double SHREK_ACTION_PERIOD = 1.00;
     private static final String DONKEY_KEY = "donkey";
-    private static final double DONKEY_ANIMATION_PERIOD = 0.25;
+    private static final double DONKEY_ANIMATION_PERIOD = 0.15;
+
+    private static final double DONKEY_ACTION_PERIOD = 0.6;
     private static final String CAPYBARA_KEY = "capybara";
     private static final double CAPYBARA_ANIMATION_PERIOD = 0.20;
     private static final String HUT_KEY = "hut";
@@ -65,7 +67,7 @@ public class Factory {
     }
 
     public static Animated createDonkey(Point position, List<PImage> images) {
-        return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD);
+        return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD, DONKEY_ACTION_PERIOD);
     }
     public static Entity createHut(Point position, List<PImage> images) {
         return new Hut(HUT_KEY, position, images);
