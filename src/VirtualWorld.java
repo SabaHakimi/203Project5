@@ -38,6 +38,7 @@ public final class VirtualWorld extends PApplet {
     private WorldModel world;
     private WorldView view;
     private EventScheduler scheduler;
+    static boolean spacePressed = false;
 
     public void settings() {
         size(VIEW_WIDTH, VIEW_HEIGHT);
@@ -130,6 +131,13 @@ public final class VirtualWorld extends PApplet {
     }
 
     public void keyPressed() {
+        /* space to start letting capybaras spawn */
+        if (key == ' ') {
+            spacePressed = !spacePressed;
+            System.out.println(spacePressed ? "Enabled Capybaras\n" : "Disabled Capybaras\n");
+            return;
+        }
+
         if (key == CODED) {
             int dx = 0;
             int dy = 0;

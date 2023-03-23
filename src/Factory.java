@@ -56,8 +56,13 @@ public class Factory {
     public static Animated createDudeNotFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
         return new DudeNotFull(id, position, images, animationPeriod, actionPeriod, resourceLimit, 0);
     }
-
-    // don't technically need resource count ... full
+    //same constructor but is creating capybara
+    public static Animated createCapybaraNotFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
+        return new DudeNotFull(id, position, images, animationPeriod, actionPeriod, resourceLimit, 0);
+    }
+    public static Animated createCapybaraFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
+        return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
+    }
     public static Animated createDudeFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
         return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
