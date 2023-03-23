@@ -19,7 +19,7 @@ public class Donkey extends Active implements Moving {
 
         if (shrek.isPresent()) {
             if (this.moveTo(world, shrek.get(), scheduler)) {
-                this.setImages(imageStore.getImageList("house"));
+                this.setImages(imageStore.getImageList("donkeyidle"));
             }
             else {
                 this.setImages(imageStore.getImageList("donkey"));
