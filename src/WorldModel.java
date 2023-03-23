@@ -108,9 +108,9 @@ public final class WorldModel {
             return false;
         Point p = new Point(entity.getPosition().x, entity.getPosition().y+1);
         if (entity.getClass() == Hut.class && !isOccupied(p)) {
-            shrek.setPosition(p);
+            /*shrek.setPosition(p);
             addEntity(shrek);
-            addEntity(entity);
+            addEntity(entity);*/
             return true;
         }
         return false;

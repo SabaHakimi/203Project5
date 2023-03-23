@@ -83,6 +83,9 @@ public final class VirtualWorld extends PApplet {
        Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
        if (world.tryAddEvent(hut, shrek)) {
            backgroundSwapBFS(pressed, (p) -> world.withinBounds(p) && !world.isOccupied(p), PathingStrategy.CARDINAL_NEIGHBORS);
+           shrek.setPosition(new Point(pressed.x, pressed.y + 1));
+           world.addEntity(shrek);
+           world.addEntity(hut);
            shrek.scheduleActions(scheduler, world, imageStore);
        }
 
@@ -110,7 +113,6 @@ public final class VirtualWorld extends PApplet {
             cur = openList.poll();
 
             range += 1;
-            System.out.println(range);
         }
     }
 
