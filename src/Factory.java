@@ -60,7 +60,6 @@ public class Factory {
         return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
 
-    //create shrek bruh
     public static Animated createShrek(String id, Point position, List<PImage> images) {
         return new Shrek(SHREK_KEY, position, images, SHREK_ANIMATION_PERIOD, SHREK_ACTION_PERIOD);
     }
@@ -68,7 +67,7 @@ public class Factory {
     public static Animated createDonkey(Point position, List<PImage> images) {
         return new Donkey(DONKEY_KEY, position, images, DONKEY_ANIMATION_PERIOD);
     }
-    public static Entity createHut( Point position, List<PImage> images) {
+    public static Entity createHut(Point position, List<PImage> images) {
         return new Hut(HUT_KEY, position, images);
     }
 }
