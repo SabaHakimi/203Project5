@@ -114,7 +114,6 @@ public class EntityParsing {
 
             properties = properties.length == ENTITY_NUM_PROPERTIES ?
                     new String[0] : properties[ENTITY_NUM_PROPERTIES].split(" ");
-
             switch (key) {
                 case OBSTACLE_KEY -> parseObstacle(world, properties, pt, id, imageStore);
                 case DUDE_KEY -> parseDude(world, properties, pt, id, imageStore);

@@ -11,7 +11,7 @@ public class DudeNotFull extends Active implements Moving {
     private final int resourceLimit;
     private int resourceCount;
 
-    public DudeNotFull(String id, Point position, List<PImage> images, double animationPeriod, double actionPeriod, int resourceLimit, int resourceCount) {
+    public DudeNotFull(String id, Point position, List<PImage> images, double animationPeriod, double actionPeriod, int resourceLimit) {
         super(id, position, images, animationPeriod, actionPeriod);
         this.resourceLimit = resourceLimit;
         this.resourceCount = resourceCount;

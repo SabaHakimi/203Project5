@@ -1,8 +1,10 @@
 import processing.core.PImage;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Shrek extends Fairy {
     public Shrek(String id, Point position, List<PImage> images, double animationPeriod, double actionPeriod) {

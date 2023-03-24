@@ -15,6 +15,8 @@ public class Factory {
     private static final double DONKEY_ACTION_PERIOD = 0.6;
     private static final String CAPYBARA_KEY = "capybara";
     private static final double CAPYBARA_ANIMATION_PERIOD = 0.20;
+    private static final double CAPYBARA_ACTION_PERIOD = 1.00;
+
     private static final String HUT_KEY = "hut";
 
 
@@ -54,21 +56,19 @@ public class Factory {
 
     // need resource count, though it always starts at 0
     public static Animated createDudeNotFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
-        return new DudeNotFull(id, position, images, animationPeriod, actionPeriod, resourceLimit, 0);
+        return new DudeNotFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
     //same constructor but is creating capybara
-    public static Animated createCapybaraNotFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
-        return new DudeNotFull(id, position, images, animationPeriod, actionPeriod, resourceLimit, 0);
-    }
-    public static Animated createCapybaraFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
-        return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
-    }
+
     public static Animated createDudeFull(String id, Point position, double actionPeriod, double animationPeriod, int resourceLimit, List<PImage> images) {
         return new DudeFull(id, position, images, animationPeriod, actionPeriod, resourceLimit);
     }
 
-    public static Animated createShrek(String id, Point position, List<PImage> images) {
+    public static Animated createShrek( Point position, List<PImage> images) {
         return new Shrek(SHREK_KEY, position, images, SHREK_ANIMATION_PERIOD, SHREK_ACTION_PERIOD);
+    }
+    public static Animated createCapybara( Point position, List<PImage> images) {
+        return new Capybara(CAPYBARA_KEY, position, images, CAPYBARA_ANIMATION_PERIOD, CAPYBARA_ACTION_PERIOD, Integer.MAX_VALUE);
     }
 
     public static Animated createDonkey(Point position, List<PImage> images) {

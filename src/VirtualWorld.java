@@ -74,14 +74,24 @@ public final class VirtualWorld extends PApplet {
    public void mousePressed() {
         Point pressed = mouseToPoint();
         System.out.println("CLICK! " + pressed.x + ", " + pressed.y);
-
-        /*Optional<Entity> entityOptional = world.getOccupant(pressed);
-        if (entityOptional.isPresent()) {
-            Entity entity = entityOptional.get();
-            System.out.println(entity.getId() + ": " + entity.getClass());
-        }*/
+       Optional<Entity> entityOptional = world.getOccupant(pressed);
+       /* Removes Shreks */
+       if (entityOptional.isPresent()) {
+           Entity entity = entityOptional.get();
+            if (entity.getClass() == Shrek.class) {
+                world.removeEntity(scheduler, entity);
+            }
+           return;
+       }
+       if (spacePressed && world.withinBounds(pressed) && !world.isOccupied(pressed)) {
+           /* Spawns in capybaras */
+           Animated capybara = Factory.createCapybara(pressed, imageStore.getImageList("capybara"));
+           world.addEntity(capybara);
+           capybara.scheduleActions(scheduler, world, imageStore);
+           return;
+       }
        Entity hut = Factory.createHut(pressed, imageStore.getImageList("hut"));
-       Animated shrek = Factory.createShrek("shrek", pressed, imageStore.getImageList("shrek"));
+       Animated shrek = Factory.createShrek(pressed, imageStore.getImageList("shrek"));
        if (world.tryAddEvent(hut, shrek)) {
            backgroundSwapBFS(pressed, (p) -> world.withinBounds(p) && !world.isOccupied(p), PathingStrategy.CARDINAL_NEIGHBORS);
            shrek.setPosition(new Point(pressed.x, pressed.y + 1));
@@ -100,7 +110,7 @@ public final class VirtualWorld extends PApplet {
         openList.add(start);
         Point cur = start;
 
-        while (openList.size() > 0 && range < (int)(Math.random() * 9 + 7)) {
+        while (openList.size() > 0 && range < (int)(Math.random() * 16 + 7)) {
             // Add neighbors
             List<Point> neighbors = potentialNeighbors.apply(cur).filter(canPassThrough).filter((p) -> (!closedList.contains(p))).toList();
             openList.addAll(neighbors);
